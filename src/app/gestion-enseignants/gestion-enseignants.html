@@ -1,29 +1,46 @@
- <form id="add-enseignant-form">
-        <label>Nom : <input type="text" id="nom" required></label>
-        <label>Corps :
-            <select id="corps" required>
-                <option value="">--Choisir--</option>
-                <option value="AGREGE(E)">Agrégé(e)</option>
-                <option value="CERTIFIE(E)">Certifié(e)</option>
-                <option value="BMP">Contractuel(le)</option>
-            </select>
-        </label>
-        <label>Quotité (%) : <input type="number" id="quotite" min="0" max="100" required></label>
-        <button type="submit">Enregistrer</button>
-    </form>
+<h1>Gestion des enseignants</h1> 
+ 
+ <form #enseignantForm="ngForm" (ngSubmit)="onSubmit()">
+  <label>Nom :
+    <input type="text" name="nom" [(ngModel)]="nouvelEnseignant.nom" required>
+  </label>
+  <label>Corps :
+  <select name="corps"
+          [(ngModel)]="nouvelEnseignant.corps"
+          (ngModelChange)="setOrsSelonCorps($event)"
+          required>
+    <option value="">--Choisir--</option>
+    <option value="AGREGE(E)">Agrégé(e)</option>
+    <option value="CERTIFIE(E)">Certifié(e)</option>
+    <option value="BMP">BMP</option>
+  </select>
+</label>
+  <label>ORS à temps complet :
+    <input type="number" name="ors" [(ngModel)]="nouvelEnseignant.ors" min="1" max="40" required>
+  </label>
+  <label>Quotité travaillée (%) :
+    <input type="number" name="quotite" [(ngModel)]="nouvelEnseignant.quotite" min="0" max="100" required>
+  </label>
+  <button type="submit">Enregistrer</button>
+</form>
 
-    <table id="enseignants-table">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Corps</th>
-                <th>Quotité (%)</th>
-                <th>ORS</th>
-                <th>Service effectif</th>
-                <th>HSA</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-    
+<table class="table-auto w-full mt-4">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Corps</th>
+      <th>ORS</th>
+      <th>Quotité (%)</th>
+      <th>Obligation de service effective</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let enseignant of enseignants">
+      <td>{{ enseignant.nom }}</td>
+      <td>{{ enseignant.corps }}</td>
+      <td>{{ enseignant.ors }}</td>
+      <td>{{ enseignant.quotite }}</td>
+      <td>{{ enseignant.service_plancher }}</td>
+    </tr>
+  </tbody>
+</table>

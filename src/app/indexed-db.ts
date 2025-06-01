@@ -7,12 +7,17 @@ import { Division } from './models/division';
 })
 export class IndexedDb {
 
-  constructor() { }
-
   db: IDBDatabase | null = null;
+  private dbReady: Promise<void>;
+  private dbReadyResolve!: () => void;
+
+  constructor() {
+    this.dbReady = new Promise(resolve => (this.dbReadyResolve = resolve));
+    this.openDb();
+  }
 
   openDb() {
-    const request = indexedDB.open('MyAppDB', 1);
+    const request = indexedDB.open('RepartitorDB', 1);
     request.onupgradeneeded = (event: any) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains('enseignants')) {
@@ -24,17 +29,22 @@ export class IndexedDb {
     };
     request.onsuccess = (event: any) => {
       this.db = event.target.result;
+      this.dbReadyResolve();
     };
     request.onerror = (event: any) => {
       console.error('Database error:', event.target.errorCode);
     };
   }
 
-  addEnseignant(enseignant: Enseignant) {
-    if (!this.db) return;
-    const tx = this.db.transaction('enseignants', 'readwrite');
-    const store = tx.objectStore('enseignants');
-    store.add(enseignant);
+  addEnseignant(enseignant: Enseignant): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve();
+      const tx = this.db.transaction('enseignants', 'readwrite');
+      const store = tx.objectStore('enseignants');
+      const request = store.add(enseignant);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   }
 
   updateEnseignant(enseignant: Enseignant) {
@@ -49,6 +59,18 @@ export class IndexedDb {
     const tx = this.db.transaction('enseignants', 'readwrite');
     const store = tx.objectStore('enseignants');
     store.delete(id);
+  }
+
+  async getAllEnseignants(): Promise<Enseignant[]> {
+    await this.dbReady;
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve([]);
+      const tx = this.db.transaction('enseignants', 'readonly');
+      const store = tx.objectStore('enseignants');
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
   }
 
   // Division methods
