@@ -1,0 +1,29 @@
+ <form id="add-enseignant-form">
+        <label>Nom : <input type="text" id="nom" required></label>
+        <label>Corps :
+            <select id="corps" required>
+                <option value="">--Choisir--</option>
+                <option value="AGREGE(E)">Agrégé(e)</option>
+                <option value="CERTIFIE(E)">Certifié(e)</option>
+                <option value="BMP">Contractuel(le)</option>
+            </select>
+        </label>
+        <label>Quotité (%) : <input type="number" id="quotite" min="0" max="100" required></label>
+        <button type="submit">Enregistrer</button>
+    </form>
+
+    <table id="enseignants-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Corps</th>
+                <th>Quotité (%)</th>
+                <th>ORS</th>
+                <th>Service effectif</th>
+                <th>HSA</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    

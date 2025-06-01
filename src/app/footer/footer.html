@@ -1,0 +1,5 @@
+<a *ngFor="let icon of contactIcons" [href]="icon.href" [target]="icon.target" [rel]="icon.rel"
+    [attr.aria-label]="icon.label" class="mx-1">
+    <i
+        [class]="icon.class + ' ' + icon.color + ' fa-lg opacity-60 hover:opacity-90 transition-opacity duration-200'"></i>
+</a>
