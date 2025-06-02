@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 export class GestionEnseignants implements OnInit {
 
   // Propriétés pour la gestion des enseignants
-  nouvelEnseignant: Partial<Enseignant> = {quotite:100};
+  nouvelEnseignant: Partial<Enseignant> = { quotite: 100 };
   enseignants: Enseignant[] = [];
 
   constructor(private db: IndexedDb) { }
@@ -44,13 +44,13 @@ export class GestionEnseignants implements OnInit {
   }
 
   setOrsSelonCorps(corps: string) {
-  if (corps === 'AGREGE(E)') {
-    this.nouvelEnseignant.ors = 15;
-  } else if (corps === 'CERTIFIE(E)') {
-    this.nouvelEnseignant.ors = 18;
-  } else {
-    this.nouvelEnseignant.ors = undefined;
+    if (corps === 'AGREGE(E)') {
+      this.nouvelEnseignant.ors = 15;
+    } else if (corps === 'CERTIFIE(E)') {
+      this.nouvelEnseignant.ors = 18;
+    } else {
+      this.nouvelEnseignant.ors = undefined;
+    }
   }
-}
 
 }
