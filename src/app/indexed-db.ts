@@ -7,15 +7,27 @@ import { Division } from './models/division';
 })
 export class IndexedDb {
 
+  /**
+   * Propriétés pour stocker la base de données IndexedDB.
+   */
   db: IDBDatabase | null = null;
   private dbReady: Promise<void>;
   private dbReadyResolve!: () => void;
 
+  /**
+   * Initialisation du service IndexedDB.
+   * La base de données est ouverte et les object stores sont créés si nécessaire.
+   * La promesse dbReady est résolue lorsque la base de données est prête.
+   */
   constructor() {
     this.dbReady = new Promise(resolve => (this.dbReadyResolve = resolve));
     this.openDb();
   }
 
+  /**
+   * Ouverture de la base de données IndexedDB.
+   * Création des object stores pour les enseignants et les divisions si nécessaire.
+   */
   openDb() {
     const request = indexedDB.open('RepartitorDB', 1);
     request.onupgradeneeded = (event: any) => {
@@ -36,6 +48,11 @@ export class IndexedDb {
     };
   }
 
+  /**
+   * Ajout d'un enseignant dans la base de données.
+   * @param enseignant 
+   * @returns 
+   */
   addEnseignant(enseignant: Enseignant): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.db) return resolve();
@@ -47,13 +64,28 @@ export class IndexedDb {
     });
   }
 
-  updateEnseignant(enseignant: Enseignant) {
-    if (!this.db) return;
+  /**
+   * Mise à jour d'un enseignant dans la base de données.
+   * @param enseignant 
+   * @returns 
+   */
+async updateEnseignant(enseignant: Enseignant): Promise<void> {
+  await this.dbReady;
+  return new Promise((resolve, reject) => {
+    if (!this.db) return resolve();
     const tx = this.db.transaction('enseignants', 'readwrite');
     const store = tx.objectStore('enseignants');
-    store.put(enseignant);
-  }
+    const request = store.put(enseignant);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
 
+/**
+ * Suppression d'un enseignant de la base de données.
+ * @param id 
+ * @returns 
+ */
   deleteEnseignant(id: number) {
     if (!this.db) return;
     const tx = this.db.transaction('enseignants', 'readwrite');
@@ -61,17 +93,31 @@ export class IndexedDb {
     store.delete(id);
   }
 
-  async getAllEnseignants(): Promise<Enseignant[]> {
-    await this.dbReady;
-    return new Promise((resolve, reject) => {
-      if (!this.db) return resolve([]);
-      const tx = this.db.transaction('enseignants', 'readonly');
-      const store = tx.objectStore('enseignants');
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
+  /**
+   * Récupération de tous les enseignants de la base de données pour affichage dans la liste.
+   * @returns 
+   */
+ async getAllEnseignants(sorted: boolean = false): Promise<Enseignant[]> {
+  await this.dbReady;
+  return new Promise((resolve, reject) => {
+    if (!this.db) return resolve([]);
+    const tx = this.db.transaction('enseignants', 'readonly');
+    const store = tx.objectStore('enseignants');
+    const request = store.getAll();
+    request.onsuccess = () => {
+      let result = request.result;
+      if (sorted) {
+        result = result.sort((a, b) =>
+          a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
+        );
+      }
+      resolve(result);
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+
 
   // Division methods
   addDivision(division: Division) {
