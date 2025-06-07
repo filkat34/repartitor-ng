@@ -4,6 +4,7 @@ import { IndexedDb } from '../indexed-db';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-gestion-enseignants',
@@ -21,7 +22,7 @@ export class GestionEnseignants implements OnInit {
   }
 
   // Propriétés pour la gestion des enseignants
-  nouvelEnseignant: Partial<Enseignant> = { quotite: 100 };
+  nouvelEnseignant: Partial<Enseignant> = { };
   enseignants: Enseignant[] = [];
   enseignantSelectionne: Enseignant | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
@@ -63,17 +64,17 @@ export class GestionEnseignants implements OnInit {
     } else {
 
       // Vérification de l'existence d'un enseignant avec le même nom (insensible à la casse et aux accents)
-    const nomNormalise = this.nouvelEnseignant.nom!
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toUpperCase();
-    const existe = this.enseignants.some(e =>
-      e.nom.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase() === nomNormalise
-    );
-    if (existe) {
-      alert('Un enseignant avec ce nom existe déjà.');
-      return;
-    }
+      const nomNormalise = this.nouvelEnseignant.nom!
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+      const existe = this.enseignants.some(e =>
+        e.nom.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase() === nomNormalise
+      );
+      if (existe) {
+        alert('Un enseignant avec ce nom existe déjà.');
+        return;
+      }
 
       // Ajout
       const enseignant: Enseignant = {
@@ -134,4 +135,11 @@ export class GestionEnseignants implements OnInit {
     this.nouvelEnseignant = { ...this.enseignantSelectionne };
     this.isEditing = true;
   }
+
+
+  clearInputs(form: NgForm) {
+  form.resetForm();
+  this.enseignantSelectionne = null;
+  this.isEditing = false;
+}
 }
