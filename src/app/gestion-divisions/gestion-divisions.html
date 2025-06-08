@@ -1,5 +1,5 @@
 <div class="sticky top-0 z-30 pb-2 bg-neutral-100">
-    <h1 class="text-3xl text-center font-bold mb-8">Gestion des divisions</h1>
+    <h1 class="text-3xl text-center font-semi-bold mb-8">Divisions</h1>
 
     <div class="flex justify-center mb-2">
        <form #divisionForm="ngForm" (ngSubmit)="onSubmit()"
@@ -40,11 +40,11 @@
             max="4"
             required
             [(ngModel)]="nouvelleDivision.ponderation"
-            [disabled]="nouvelleDivision.division_examen == 0"
-            [ngClass]="nouvelleDivision.division_examen == 0 ? 'bg-gray-200 text-gray-500' : ''"
-            [value]="nouvelleDivision.division_examen == 0 ? 1 : nouvelleDivision.ponderation"
+            [disabled]="nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen"
+            [ngClass]="nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen ? 'bg-gray-200 text-gray-500' : ''"
+            [value]="nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen ? 1 : (nouvelleDivision.ponderation || 1)"
             (ngModelChange)="
-                nouvelleDivision.division_examen == 0 && (nouvelleDivision.ponderation = 1)
+                (nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen) && (nouvelleDivision.ponderation = 1)
             "
             class="border border-gray-400 rounded px-2 ml-2 w-16 text-right"
         />
