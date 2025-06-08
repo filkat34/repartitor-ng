@@ -69,23 +69,23 @@ export class IndexedDb {
    * @param enseignant 
    * @returns 
    */
-async updateEnseignant(enseignant: Enseignant): Promise<void> {
-  await this.dbReady;
-  return new Promise((resolve, reject) => {
-    if (!this.db) return resolve();
-    const tx = this.db.transaction('enseignants', 'readwrite');
-    const store = tx.objectStore('enseignants');
-    const request = store.put(enseignant);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
+  async updateEnseignant(enseignant: Enseignant): Promise<void> {
+    await this.dbReady;
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve();
+      const tx = this.db.transaction('enseignants', 'readwrite');
+      const store = tx.objectStore('enseignants');
+      const request = store.put(enseignant);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
 
-/**
- * Suppression d'un enseignant de la base de données.
- * @param id 
- * @returns 
- */
+  /**
+   * Suppression d'un enseignant de la base de données.
+   * @param id 
+   * @returns 
+   */
   deleteEnseignant(id: number) {
     if (!this.db) return;
     const tx = this.db.transaction('enseignants', 'readwrite');
@@ -97,47 +97,97 @@ async updateEnseignant(enseignant: Enseignant): Promise<void> {
    * Récupération de tous les enseignants de la base de données pour affichage dans la liste.
    * @returns 
    */
- async getAllEnseignants(sorted: boolean = false): Promise<Enseignant[]> {
-  await this.dbReady;
-  return new Promise((resolve, reject) => {
-    if (!this.db) return resolve([]);
-    const tx = this.db.transaction('enseignants', 'readonly');
-    const store = tx.objectStore('enseignants');
-    const request = store.getAll();
-    request.onsuccess = () => {
-      let result = request.result;
-      if (sorted) {
-        result = result.sort((a, b) =>
-          a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
-        );
-      }
-      resolve(result);
-    };
-    request.onerror = () => reject(request.error);
-  });
-}
-
-
-
-  // Division methods
-  addDivision(division: Division) {
-    if (!this.db) return;
-    const tx = this.db.transaction('divisions', 'readwrite');
-    const store = tx.objectStore('divisions');
-    store.add(division);
+  async getAllEnseignants(sorted: boolean = false): Promise<Enseignant[]> {
+    await this.dbReady;
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve([]);
+      const tx = this.db.transaction('enseignants', 'readonly');
+      const store = tx.objectStore('enseignants');
+      const request = store.getAll();
+      request.onsuccess = () => {
+        let result = request.result;
+        if (sorted) {
+          result = result.sort((a, b) =>
+            a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
+          );
+        }
+        resolve(result);
+      };
+      request.onerror = () => reject(request.error);
+    });
   }
 
-  updateDivision(division: Division) {
-    if (!this.db) return;
-    const tx = this.db.transaction('divisions', 'readwrite');
-    const store = tx.objectStore('divisions');
-    store.put(division);
+  /**
+   * Ajout d'une division dans la base de données.
+   * @param division 
+   * @returns 
+   */
+  addDivision(division: Division): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve();
+      const tx = this.db.transaction('divisions', 'readwrite');
+      const store = tx.objectStore('divisions');
+      const request = store.add(division);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   }
 
-  deleteDivision(id: number) {
-    if (!this.db) return;
-    const tx = this.db.transaction('divisions', 'readwrite');
-    const store = tx.objectStore('divisions');
-    store.delete(id);
+  /**
+   * Mise à jour d'une division dans la base de données.
+   * @param division 
+   * @returns 
+   */
+  async updateDivision(division: Division): Promise<void> {
+    await this.dbReady;
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve();
+      const tx = this.db.transaction('divisions', 'readwrite');
+      const store = tx.objectStore('divisions');
+      const request = store.put(division);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   }
+
+  /**
+   * Suppression d'une division de la base de données.
+   * @param id 
+   * @returns 
+   */
+  deleteDivision(id: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve();
+      const tx = this.db.transaction('divisions', 'readwrite');
+      const store = tx.objectStore('divisions');
+      const request = store.delete(id);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Récupération de toutes les divisions de la base de données.
+   * @returns 
+   */
+  async getAllDivisions(sorted: boolean = false): Promise<Division[]> {
+    await this.dbReady;
+    return new Promise((resolve, reject) => {
+      if (!this.db) return resolve([]);
+      const tx = this.db.transaction('divisions', 'readonly');
+      const store = tx.objectStore('divisions');
+      const request = store.getAll();
+      request.onsuccess = () => {
+        let result = request.result;
+        if (sorted) {
+          result = result.sort((a, b) =>
+            a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' })
+          );
+        }
+        resolve(result);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
+
 }

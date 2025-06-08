@@ -22,7 +22,7 @@ export class GestionEnseignants implements OnInit {
   }
 
   // Propriétés pour la gestion des enseignants
-  nouvelEnseignant: Partial<Enseignant> = { };
+  nouvelEnseignant: Partial<Enseignant> = {};
   enseignants: Enseignant[] = [];
   enseignantSelectionne: Enseignant | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
@@ -137,9 +137,14 @@ export class GestionEnseignants implements OnInit {
   }
 
 
+  /**
+   * Méthode pour réinitialiser le formulaire et les sélections.
+   * Elle est appelée pour vider les champs du formulaire et réinitialiser l'état d'édition.
+   * @param form 
+   */
   clearInputs(form: NgForm) {
-  form.resetForm();
-  this.enseignantSelectionne = null;
-  this.isEditing = false;
-}
+    form.resetForm();
+    this.enseignantSelectionne = null;
+    this.isEditing = false;
+  }
 }
