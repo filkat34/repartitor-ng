@@ -1,9 +1,41 @@
 <div class="sticky top-0 z-30 pb-2 bg-neutral-100">
-  <h1 class="text-3xl text-center font-semi-bold mb-8">Services</h1>
-  <div class="flex justify-center mb-2">
-    <span class="text-lg text-center font-semi-bold mb-8">Divisions non affectées : </span>
-    <span class="mx-2"></span>
-    <span class="text-lg text-center font-semi-bold mb-8">HSA de l'équipe : </span>
+  <h1 class="text-3xl text-center font-semi-bold mb-2">Services</h1>
+  <div class="flex justify-center text-lg text-center font-semi-bold text-red-600">
+    <span *ngIf="DivisionsNonAffectees().length > 0" class="mb-2">Division(s) non affectée(s) :</span>
+    <span *ngIf="DivisionsNonAffectees().length > 0">
+      <span *ngFor="let div of DivisionsNonAffectees()">
+        <span class="mx-1"></span>{{ div.nom }} ({{ div.no }})
+      </span>
+    </span>
+  </div>
+  <div class="flex justify-center mb-2 text-lg text-center font-semi-bold text-blue-600">
+    <span>HSA de l'équipe : {{CalculateTotalHSA()| number:'1.2-2'}} </span>
+  </div>
+</div>
+
+
+<div class="flex flex-wrap gap-4">
+  <div *ngFor="let enseignant of enseignants" class="border rounded shadow p-4 w-64 bg-white">
+    <h2 class="text-xl text-center font-bold mb-4">{{ enseignant.nom }}</h2>
+    <ul class="pl-6 list-none">
+      <li *ngFor="let division of divisions" class="flex items-center mb-2">
+        <span class="flex-1">{{ division.nom }}</span>
+        <button type="button" name="deleteClass" (click)="deleteClassFromService(enseignant, division.nom)"
+          [disabled]="isDeleteDisabled(enseignant, division)"
+          [ngClass]="isDeleteDisabled(enseignant, division) ? 'bg-gray-200 px-2 rounded-l cursor-not-allowed' : 'bg-red-200 px-2 rounded-l hover:bg-red-300'">-</button>
+        <span class="mx-2">{{ getClasseNoForDivision(enseignant, division.nom) }}</span>
+        <button type="button" name="addClass" (click)="addClassToService(enseignant, division.nom)"
+          [disabled]="isAddDisabled(division)"
+          [ngClass]="isAddDisabled(division) ? 'bg-gray-200 px-2 rounded-r cursor-not-allowed' : 'bg-green-200 px-2 rounded-r hover:bg-green-300'">
+          +
+        </button>
+      </li>
+    </ul>
+    <hr class="my-4">
+    <h3 class="text-xl text-center text-blue-600 font-semi-bold mb-4 mt-4">Service : {{CalculateService(enseignant)| number:'1.2-2'}}
+    </h3>
+    <h3 class="text-xl text-center text-red-600 font-semi-bold">
+      HSA : {{ (CalculateHSA(enseignant)) < 0 ? 0 : (CalculateHSA(enseignant)| number:'1.2-2') }} </h3>
   </div>
 </div>
 
@@ -14,5 +46,5 @@
   </button>
   <button type="button" class="bg-purple-600 text-white border rounded px-4 mr-3 hover:bg-purple-700 transition">
     <i class="fa-solid fa-file-export"></i>
-    </button>
+  </button>
 </div>

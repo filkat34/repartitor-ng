@@ -78,7 +78,7 @@
         <td class="border-t px-4 py-2">{{ enseignant.corps }}</td>
         <td class="border-t px-4 py-2 text-left">{{ enseignant.ors }}</td>
         <td class="border-t px-4 py-2 text-left">{{ enseignant.quotite }}</td>
-        <td class="border-t px-4 py-2 text-left">{{ enseignant.service_plancher }}</td>
+        <td class="border-t px-4 py-2 text-left">{{ enseignant.service_plancher | number:'1.2-2' }}</td>
       </tr>
     </tbody>
   </table>

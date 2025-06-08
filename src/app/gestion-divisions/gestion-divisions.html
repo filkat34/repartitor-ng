@@ -15,10 +15,14 @@
     </label>
     <label class="flex items-center">
         Niveau à examen :
-        <select name="division_examen" required [(ngModel)]="nouvelleDivision.division_examen" class="border border-gray-400 rounded px-2 ml-2">
+        <select name="division_examen" required [(ngModel)]="nouvelleDivision.division_examen" class="border border-gray-400 rounded px-2 ml-2"
+        (ngModelChange)="
+                (nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen) && (nouvelleDivision.ponderation = 1)
+            ">
             <option value="">--Choisir--</option>
             <option [ngValue]="1">Oui</option>
             <option [ngValue]="0">Non</option>
+            
         </select>
     </label>
     <label class="flex items-center">
@@ -42,10 +46,6 @@
             [(ngModel)]="nouvelleDivision.ponderation"
             [disabled]="nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen"
             [ngClass]="nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen ? 'bg-gray-200 text-gray-500' : ''"
-            [value]="nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen ? 1 : (nouvelleDivision.ponderation || 1)"
-            (ngModelChange)="
-                (nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen) && (nouvelleDivision.ponderation = 1)
-            "
             class="border border-gray-400 rounded px-2 ml-2 w-16 text-right"
         />
     </label>
@@ -57,10 +57,10 @@
                 </button>
                 <button type="button" id="eraseButton" [disabled]="!divisionSelectionnee && (!nouvelleDivision.nom && !nouvelleDivision.nombreDivisions && 
           !nouvelleDivision.horaire_eleve_classe_entiere && !nouvelleDivision.horaire_eleve_demi_groupe && 
-          !nouvelleDivision.division_examen && !nouvelleDivision.ponderation)" 
+          !nouvelleDivision.division_examen && (!nouvelleDivision.ponderation || nouvelleDivision.ponderation == 1))" 
           [ngClass]="!divisionSelectionnee && (!nouvelleDivision.nom && !nouvelleDivision.nombreDivisions && 
           !nouvelleDivision.horaire_eleve_classe_entiere && !nouvelleDivision.horaire_eleve_demi_groupe && 
-          !nouvelleDivision.division_examen && !nouvelleDivision.ponderation)
+          !nouvelleDivision.division_examen && (!nouvelleDivision.ponderation || nouvelleDivision.ponderation == 1))
     ? 'bg-gray-400 border-gray-400 cursor-not-allowed'
     : 'bg-yellow-500 border-yellow-500 hover:bg-yellow-600'" class="text-white border rounded px-2 transition px-2"
                     (click)="clearInputs(divisionForm)">
@@ -102,8 +102,8 @@
                 <td class="border-t px-4 py-2">{{ division.nombreDivisions }}</td>
                 <td class="border-t px-4 py-2 text-left">{{ division.division_examen == 1 ? 'Oui' : 'Non' }}</td>
                 <td class="border-t px-4 py-2 text-left">{{ division.horaire_eleve_classe_entiere + division.horaire_eleve_demi_groupe }}</td>
-                <td class="border-t px-4 py-2 text-left">{{ division.horaire_enseignant | number:'1.1-1' }}</td>
-                <td class="border-t px-4 py-2 text-left">{{ (division.horaire_enseignant * division.nombreDivisions) | number:'1.1-1' }}</td>
+                <td class="border-t px-4 py-2 text-left">{{ division.horaire_enseignant | number:'1.2-2' }}</td>
+                <td class="border-t px-4 py-2 text-left">{{ (division.horaire_enseignant * division.nombreDivisions) | number:'1.2-2' }}</td>
             </tr>
         </tbody>
     </table>
