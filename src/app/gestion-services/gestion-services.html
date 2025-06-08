@@ -1,4 +1,4 @@
-<div class="sticky top-0 z-30 pb-2 bg-neutral-100">
+<div class="sticky top-0 z-30 pb-2 bg-neutral-100 mb-2">
   <h1 class="text-3xl text-center font-semi-bold mb-2">Services</h1>
   <div class="flex justify-center text-lg text-center font-semi-bold text-red-600">
     <span *ngIf="DivisionsNonAffectees().length > 0" class="mb-2">Division(s) non affectée(s) :</span>
@@ -32,9 +32,9 @@
       </li>
     </ul>
     <hr class="my-4">
-    <h3 class="text-xl text-center text-blue-600 font-semi-bold mb-4 mt-4">Service : {{CalculateService(enseignant)| number:'1.2-2'}}
+    <h3 class="text-xl text-center font-semi-bold mb-4 mt-4">Service : {{CalculateService(enseignant)| number:'1.2-2'}}
     </h3>
-    <h3 class="text-xl text-center text-red-600 font-semi-bold">
+    <h3 class="text-xl text-center font-semi-bold">
       HSA : {{ (CalculateHSA(enseignant)) < 0 ? 0 : (CalculateHSA(enseignant)| number:'1.2-2') }} </h3>
   </div>
 </div>
@@ -44,7 +44,7 @@
     [routerLink]="'/divisions'">
     <i class="fas fa-arrow-left"></i>
   </button>
-  <button type="button" class="bg-purple-600 text-white border rounded px-4 mr-3 hover:bg-purple-700 transition">
-    <i class="fa-solid fa-file-export"></i>
+  <button type="button" (click)="exportToCSV()" class="bg-purple-600 text-white border rounded px-4 mr-3 hover:bg-purple-700 transition">
+    .csv <i class="fa-solid fa-file-export"></i>
   </button>
 </div>
