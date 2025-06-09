@@ -11,7 +11,7 @@
     </a>
   </div>
   <!-- Right Section -->
-  <div class="flex space-x-4">
+  <div class="flex space-x-2">
     <a routerLink="/enseignants" routerLinkActive #rla1="routerLinkActive" [routerLinkActiveOptions]="{ exact: true }">
       <div [ngClass]="{
           'bg-orange-500 border-orange-900': rla1.isActive,
@@ -39,35 +39,153 @@
         3
       </div>
     </a>
-    <button type="button" (click)="openModal()"
-      class="bg-red-500 border-red-900 hover:bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center mb-2 shadow-md border-2 transition-colors">
-      <i class="fa-solid fa-gear text-base"></i>
+    <button type="button" (click)="openModalDB()"
+      class="bg-blue-500 border-blue-900 hover:bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center mb-2 shadow-md border-2 transition-colors cursor-pointer">
+      <i class="fa-solid fa-database text-base"></i>
+    </button>
+    <button type="button" (click)="openModalHelp()"
+      class="bg-blue-500 border-blue-900 hover:bg-orange-500 text-white rounded-full w-7 h-7 flex items-center justify-center mb-2 shadow-md border-2 transition-colors cursor-pointer">
+      <i class="fa-solid fa-question"></i>
     </button>
   </div>
 </div>
-<!-- Modal -->
-<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+<!-- Modal DB -->
+<div *ngIf="showModalDB" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm ml-3 mr-3">
   <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
-    <button (click)="closeModal()"
+    <button (click)="closeModalDB()"
       class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-3xl">&times;</button>
     <h2 class="text-xl font-bold mb-4 text-center">Base de données</h2>
     <p class="text-center text-blue-700 font-semibold">{{ dbMessage }}</p>
     <div class="mt-6 flex justify-center space-x-4">
-      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" (click)="exportDb()">Exporter</button>
-      <button
-  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-  (click)="fileInput.click()"
->
-  Importer
-</button>
-<input
-  #fileInput
-  type="file"
-  accept="application/json"
-  style="display: none"
-  (change)="onImportDb($event)"
->
-      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Effacer</button>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" (click)="exportDb()"
+        [disabled]="!dbExists" [ngClass]="{ 'opacity-50 cursor-not-allowed': !dbExists }">
+        Exporter
+      </button>
+      <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" (click)="fileInput.click()"
+        [disabled]="!dbExists" [ngClass]="{ 'opacity-50 cursor-not-allowed': !dbExists }">
+        Importer
+      </button>
+      <input #fileInput type="file" accept="application/json" style="display: none" (change)="onImportDb($event)">
+      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" (click)="eraseDb()"
+        [disabled]="!dbExists" [ngClass]="{ 'opacity-50 cursor-not-allowed': !dbExists }">
+        Effacer
+      </button>
     </div>
+  </div>
+</div>
+
+<!-- Modal Help -->
+<div *ngIf="showModalHelp" class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm ml-3 mr-3 mb-4">
+  <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
+    <button (click)="closeModalHelp()"
+      class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-3xl">&times;</button>
+    <h2 class="text-xl font-bold mb-4 text-center">Aide</h2>
+    <div class="overflow-x-auto">
+      <table class="border border-gray-300 rounded-lg w-full mb-3 mt-3 shadow text-sm">
+        <tbody>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="bg-blue-500 border-blue-900 text-white text-sm rounded-full w-7 h-7 flex items-center justify-center shadow-md border-2 mx-auto mb-2">
+                1
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-blue-700">Navigation</span>
+              <br>
+              Liens vers les différentes composantes de l'application :
+              <span class="font-bold">1</span> : Gestion des enseignants,
+              <span class="font-bold">2</span> : Gestion des divisions,
+              <span class="font-bold">3</span> : Gestion des services.
+            </td>
+          </tr>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="bg-blue-500 border-blue-900 text-white text-sm rounded-full w-7 h-7 flex items-center justify-center shadow-md border-2 mx-auto mb-2">
+                <i class="fa-solid fa-database text-base"></i>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-blue-700">Base de données</span>
+              <br>
+              Ouvre une fenêtre modale pour gérer la base de données locale : vous pouvez exporter votre base de données,
+              en importer une autre ou effacer les données de la base de données locale.
+            </td>
+          </tr>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="text-white border rounded px-2 bg-green-600 flex items-center justify-center w-7 h-7 mx-auto mb-2">
+                <i class="fa fa-save"></i>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-green-700">Sauvegarder</span>
+              <br>
+              Sauvegarde les données saisies dans la base de données locale ou enregistre les modifications apportées.
+            </td>
+          </tr>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="text-white border rounded px-2 bg-yellow-500 flex items-center justify-center w-7 h-7 mx-auto mb-2">
+                <i class="fa fa-eraser"></i>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-yellow-700">Effacer</span>
+              <br>
+              Efface les données saisies dans les champs de saisie, sans supprimer les données de la base de données
+              locale.
+            </td>
+          </tr>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="text-white border rounded px-2 bg-blue-600 flex items-center justify-center w-7 h-7 mx-auto mb-2">
+                <i class="fa fa-edit"></i>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-blue-700">Modifier</span>
+              <br>
+              Modifie les données de l'élément sélectionné dans la liste.
+            </td>
+          </tr>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="text-white border rounded px-2 bg-red-600 flex items-center justify-center w-7 h-7 mx-auto mb-2">
+                <i class="fa fa-trash"></i>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-red-700">Supprimer</span>
+              <br>
+              Supprime l'élément sélectionné dans la liste de la base de données locale.
+            </td>
+          </tr>
+          <tr class="even:bg-gray-50">
+            <td class="border px-4 py-2 align-middle w-16">
+              <div
+                class="text-white border rounded px-2 bg-purple-600 flex items-center justify-center w-7 h-7 mx-auto mb-2">
+                <i class="fa-solid fa-file-export"></i>
+              </div>
+            </td>
+            <td class="border px-4 py-2">
+              <span class="font-semibold text-purple-700">Exporter</span>
+              <br>
+              Exporte la répartition des services au format CSV. Ce fichier peut être ouvert avec un tableur comme Excel
+              ou LibreOffice Calc.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex justify-center mt-4">
+      <button class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 text-center items-center" (click)="closeModalHelp()">
+        Fermer
+      </button>
   </div>
 </div>

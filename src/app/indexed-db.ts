@@ -14,6 +14,7 @@ export class IndexedDb {
   private dbReady: Promise<void>;
   private dbReadyResolve!: () => void;
 
+
   /**
    * Initialisation du service IndexedDB.
    * La base de données est ouverte et les object stores sont créés si nécessaire.
@@ -23,6 +24,7 @@ export class IndexedDb {
     this.dbReady = new Promise(resolve => (this.dbReadyResolve = resolve));
     this.openDb();
   }
+
 
   /**
    * Ouverture de la base de données IndexedDB.
@@ -48,6 +50,7 @@ export class IndexedDb {
     };
   }
 
+
   /**
    * Ajout d'un enseignant dans la base de données.
    * @param enseignant 
@@ -63,6 +66,7 @@ export class IndexedDb {
       request.onerror = () => reject(request.error);
     });
   }
+
 
   /**
    * Mise à jour d'un enseignant dans la base de données.
@@ -81,6 +85,7 @@ export class IndexedDb {
     });
   }
 
+
   /**
    * Suppression d'un enseignant de la base de données.
    * @param id 
@@ -92,6 +97,7 @@ export class IndexedDb {
     const store = tx.objectStore('enseignants');
     store.delete(id);
   }
+
 
   /**
    * Récupération de tous les enseignants de la base de données pour affichage dans la liste.
@@ -117,6 +123,7 @@ export class IndexedDb {
     });
   }
 
+
   /**
    * Ajout d'une division dans la base de données.
    * @param division 
@@ -132,6 +139,7 @@ export class IndexedDb {
       request.onerror = () => reject(request.error);
     });
   }
+
 
   /**
    * Mise à jour d'une division dans la base de données.
@@ -150,6 +158,7 @@ export class IndexedDb {
     });
   }
 
+
   /**
    * Suppression d'une division de la base de données.
    * @param id 
@@ -165,6 +174,7 @@ export class IndexedDb {
       request.onerror = () => reject(request.error);
     });
   }
+
 
   /**
    * Récupération de toutes les divisions de la base de données.
@@ -190,6 +200,13 @@ export class IndexedDb {
     });
   }
 
+
+  /**
+   * Vérifie si une base de données IndexedDB existe sans l'ouvrir.
+   * Utilise indexedDB.databases() si disponible, sinon retourne false pour les navigateurs anciens.
+   * @param dbName Nom de la base de données à vérifier
+   * @returns 
+   */
   indexedDbExists(dbName: string): Promise<boolean> {
     // Utilise indexedDB.databases() si disponible (navigateurs modernes)
     if (typeof indexedDB.databases === 'function') {
@@ -200,6 +217,7 @@ export class IndexedDb {
     // Fallback pour navigateurs anciens : on ne peut pas savoir sans ouvrir
     return Promise.resolve(false);
   }
+
 
   /**
  * Exporte toute la base de données (enseignants et divisions) au format JSON.
@@ -212,6 +230,7 @@ export class IndexedDb {
     const data = { enseignants, divisions };
     return JSON.stringify(data, null, 2);
   }
+
 
   /**
  * Vérifie si un JSON correspond au format attendu pour l'import de la base.
@@ -241,6 +260,7 @@ export class IndexedDb {
     }
   }
 
+
   /**
    * Importe une base de données depuis un JSON et écrase la base actuelle.
    * @param json Le contenu JSON à importer
@@ -254,24 +274,7 @@ export class IndexedDb {
     const data = JSON.parse(json);
 
     // Efface les stores existants
-    if (this.db) {
-      // Supprime tous les enseignants
-      await new Promise<void>((resolve, reject) => {
-        const tx = this.db!.transaction('enseignants', 'readwrite');
-        const store = tx.objectStore('enseignants');
-        const clearReq = store.clear();
-        clearReq.onsuccess = () => resolve();
-        clearReq.onerror = () => reject(clearReq.error);
-      });
-      // Supprime toutes les divisions
-      await new Promise<void>((resolve, reject) => {
-        const tx = this.db!.transaction('divisions', 'readwrite');
-        const store = tx.objectStore('divisions');
-        const clearReq = store.clear();
-        clearReq.onsuccess = () => resolve();
-        clearReq.onerror = () => reject(clearReq.error);
-      });
-    }
+    await this.clearAllStores();
 
     // Réinjecte les données
     if (Array.isArray(data.enseignants)) {
@@ -285,4 +288,32 @@ export class IndexedDb {
       }
     }
   }
+
+  
+  /**
+ * Efface tous les stores (enseignants et divisions) de la base de données.
+ * @returns Promise<void>
+ */
+  async clearAllStores(): Promise<void> {
+    await this.dbReady;
+    if (!this.db) return;
+    // Efface les enseignants
+    await new Promise<void>((resolve, reject) => {
+      const tx = this.db!.transaction('enseignants', 'readwrite');
+      const store = tx.objectStore('enseignants');
+      const clearReq = store.clear();
+      clearReq.onsuccess = () => resolve();
+      clearReq.onerror = () => reject(clearReq.error);
+    });
+    // Efface les divisions
+    await new Promise<void>((resolve, reject) => {
+      const tx = this.db!.transaction('divisions', 'readwrite');
+      const store = tx.objectStore('divisions');
+      const clearReq = store.clear();
+      clearReq.onsuccess = () => resolve();
+      clearReq.onerror = () => reject(clearReq.error);
+    });
+  }
 }
+
+
