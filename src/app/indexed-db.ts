@@ -1,18 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Enseignant } from './models/enseignant';
 import { Division } from './models/division';
+import { Subject } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class IndexedDb {
 
+   
   /**
    * Propriétés pour stocker la base de données IndexedDB.
    */
-  db: IDBDatabase | null = null;
-  private dbReady: Promise<void>;
-  private dbReadyResolve!: () => void;
+  db: IDBDatabase | null = null;// Instance de la base de données IndexedDB
+  private dbReady: Promise<void>;// Promise pour indiquer que la base de données est prête
+  private dbReadyResolve!: () => void;// Promise pour indiquer que la base de données est prête
+  dbChanged$ = new Subject<void>();// Observable pour notifier les changements dans la base de données
 
 
   /**
@@ -62,7 +66,10 @@ export class IndexedDb {
       const tx = this.db.transaction('enseignants', 'readwrite');
       const store = tx.objectStore('enseignants');
       const request = store.add(enseignant);
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => {
+      this.dbChanged$.next();
+      resolve();
+    };
       request.onerror = () => reject(request.error);
     });
   }
@@ -80,7 +87,10 @@ export class IndexedDb {
       const tx = this.db.transaction('enseignants', 'readwrite');
       const store = tx.objectStore('enseignants');
       const request = store.put(enseignant);
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => {
+      this.dbChanged$.next();
+      resolve();
+    };
       request.onerror = () => reject(request.error);
     });
   }
@@ -96,6 +106,7 @@ export class IndexedDb {
     const tx = this.db.transaction('enseignants', 'readwrite');
     const store = tx.objectStore('enseignants');
     store.delete(id);
+    this.dbChanged$.next();
   }
 
 
@@ -135,7 +146,10 @@ export class IndexedDb {
       const tx = this.db.transaction('divisions', 'readwrite');
       const store = tx.objectStore('divisions');
       const request = store.add(division);
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => {
+      this.dbChanged$.next();
+      resolve();
+    };
       request.onerror = () => reject(request.error);
     });
   }
@@ -153,7 +167,10 @@ export class IndexedDb {
       const tx = this.db.transaction('divisions', 'readwrite');
       const store = tx.objectStore('divisions');
       const request = store.put(division);
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => {
+      this.dbChanged$.next();
+      resolve();
+    };
       request.onerror = () => reject(request.error);
     });
   }
@@ -170,7 +187,10 @@ export class IndexedDb {
       const tx = this.db.transaction('divisions', 'readwrite');
       const store = tx.objectStore('divisions');
       const request = store.delete(id);
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => {
+      this.dbChanged$.next();
+      resolve();
+    };
       request.onerror = () => reject(request.error);
     });
   }
@@ -287,6 +307,7 @@ export class IndexedDb {
         await this.addDivision(division);
       }
     }
+    this.dbChanged$.next();
   }
 
   

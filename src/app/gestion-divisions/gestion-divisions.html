@@ -14,18 +14,6 @@
             class="border border-gray-400 rounded px-2 ml-2 w-16 text-right" />
     </label>
     <label class="flex items-center">
-        Niveau à examen :
-        <select name="division_examen" required [(ngModel)]="nouvelleDivision.division_examen" class="border border-gray-400 rounded px-2 ml-2"
-        (ngModelChange)="
-                (nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen) && (nouvelleDivision.ponderation = 1)
-            ">
-            <option value="">--Choisir--</option>
-            <option [ngValue]="1">Oui</option>
-            <option [ngValue]="0">Non</option>
-            
-        </select>
-    </label>
-    <label class="flex items-center">
         Heures en classe entière (élève) :
         <input type="number" name="horaire_eleve_classe_entiere" min="0" max="20" required [(ngModel)]="nouvelleDivision.horaire_eleve_classe_entiere"
             class="border border-gray-400 rounded px-2 ml-2 w-16 text-right" />
@@ -37,6 +25,18 @@
     </label>
     <label class="flex items-center">
         Pondération :
+        <select name="division_examen" required [(ngModel)]="nouvelleDivision.division_examen" class="border border-gray-400 rounded px-2 ml-2"
+        (ngModelChange)="
+                (nouvelleDivision.division_examen === 0 || !nouvelleDivision.division_examen) && (nouvelleDivision.ponderation = 1)
+            ">
+            <option value="">--Choisir--</option>
+            <option [ngValue]="1">Oui</option>
+            <option [ngValue]="0">Non</option>
+            
+        </select>
+    </label>
+    <label class="flex items-center">
+        Coefficient de la pondération :
         <input
             type="number"
             name="ponderation"
@@ -83,38 +83,42 @@
     </div>
 </div>
 
-<div class="overflow-x-auto mt-4 px-2" style="max-height: 50vh; overflow-y:auto;">
-    <table class="table-auto w-full border border-gray-300 rounded-lg overflow-hidden shadow">
-        <thead class="bg-blue-100">
-            <tr>
-                <th class="px-4 py-2 text-left font-semibold text-blue-800">Niveau</th>
-                <th class="px-4 py-2 text-left font-semibold text-blue-800">Nombre de divisions</th>
-                <th class="px-4 py-2 text-left font-semibold text-blue-800">Niveau à examen</th>
-                <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures élève</th>
-                <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof (par division)</th>
-                <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof (total)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let division of divisions" (click)="selectDivision(division)"
-                [class.bg-blue-200]="divisionSelectionnee === division" class="cursor-pointer">
-                <td class="border-t px-4 py-2">{{ division.nom }}</td>
-                <td class="border-t px-4 py-2">{{ division.nombreDivisions }}</td>
-                <td class="border-t px-4 py-2 text-left">{{ division.division_examen == 1 ? 'Oui' : 'Non' }}</td>
-                <td class="border-t px-4 py-2 text-left">{{ division.horaire_eleve_classe_entiere + division.horaire_eleve_demi_groupe }}</td>
-                <td class="border-t px-4 py-2 text-left">{{ division.horaire_enseignant | number:'1.2-2' }}</td>
-                <td class="border-t px-4 py-2 text-left">{{ (division.horaire_enseignant * division.nombreDivisions) | number:'1.2-2' }}</td>
-            </tr>
-        </tbody>
-    </table>
+<div *ngIf="divisions.length === 0" class="text-center text-lg text-red-600 mt-8 mb-8">
+  Aucune division dans la base de données ! Commencez par en ajouter une.
+</div>
+
+<div *ngIf="divisions.length > 0" class="overflow-x-auto mt-4 px-2" style="max-height: 50vh; overflow-y:auto;">
+  <table class="table-auto w-full border border-gray-300 rounded-lg overflow-hidden shadow">
+    <thead class="bg-blue-100">
+      <tr>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Niveau</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Nombre de divisions</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Pondération</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures élève</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof (par division)</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof (total)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let division of divisions" (click)="selectDivision(division)"
+        [class.bg-blue-200]="divisionSelectionnee === division" class="cursor-pointer">
+        <td class="border-t px-4 py-2">{{ division.nom }}</td>
+        <td class="border-t px-4 py-2">{{ division.nombreDivisions }}</td>
+        <td class="border-t px-4 py-2 text-left">{{ division.division_examen == 1 ? 'Oui' : 'Non' }}</td>
+        <td class="border-t px-4 py-2 text-left">{{ division.horaire_eleve_classe_entiere + division.horaire_eleve_demi_groupe }}</td>
+        <td class="border-t px-4 py-2 text-left">{{ division.horaire_enseignant | number:'1.2-2' }}</td>
+        <td class="border-t px-4 py-2 text-left">{{ (division.horaire_enseignant * division.nombreDivisions) | number:'1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div class="sticky bottom-0 z-30 pt-2 justify-center flex mt-2 bg-neutral-100">
-     <button type="button" class="bg-orange-600 text-white border rounded px-4 mr-3 hover:bg-orange-700 transition"
+     <button type="button" class="bg-orange-600 text-white border rounded px-4 mr-3 hover:bg-orange-700 transition cursor-pointer"
         [routerLink]="'/enseignants'">
         <i class="fas fa-arrow-left"></i>
     </button>
-    <button type="button" class="bg-orange-600 text-white border rounded px-4 mr-3 hover:bg-orange-700 transition"
+    <button type="button" class="bg-orange-600 text-white border rounded px-4 mr-3 hover:bg-orange-700 transition cursor-pointer"
         [routerLink]="'/services'">
         <i class="fas fa-arrow-right"></i>
     </button>

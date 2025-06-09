@@ -1,6 +1,6 @@
- <div class="flex gap-2 p-1">
-<a *ngFor="let icon of contactIcons" [href]="icon.href" [target]="icon.target" [rel]="icon.rel"
-    [attr.aria-label]="icon.label" class="mx-1">
-    <i
-        [class]="icon.class + ' ' + icon.color + ' fa-lg opacity-60 hover:opacity-90 transition-opacity duration-200'"></i>
-</a></div>
+<div class="flex gap-8 p-1 text-center justify-center">
+    <span class="text-sm text-green-700">Apport postes : {{ApportHeures()| number:'1.2-2'}}</span>
+    <span class="text-sm text-red-700">Besoins : {{BesoinHeures()| number:'1.2-2'}}</span>
+    <span class="text-sm text-orange-700">Heures non pourvues : {{BesoinHeures() - HeuresAffectees()| number:'1.2-2'}}</span>
+    <span class="text-sm text-blue-700">Total HSA : {{CalculateTotalHSA()| number:'1.2-2'}}</span>
+</div>
