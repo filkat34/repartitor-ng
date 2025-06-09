@@ -190,4 +190,99 @@ export class IndexedDb {
     });
   }
 
+  indexedDbExists(dbName: string): Promise<boolean> {
+    // Utilise indexedDB.databases() si disponible (navigateurs modernes)
+    if (typeof indexedDB.databases === 'function') {
+      return indexedDB.databases()
+        .then(dbs => dbs.some(db => db.name === dbName))
+        .catch(() => false);
+    }
+    // Fallback pour navigateurs anciens : on ne peut pas savoir sans ouvrir
+    return Promise.resolve(false);
+  }
+
+  /**
+ * Exporte toute la base de données (enseignants et divisions) au format JSON.
+ * @returns Promise<string> - le contenu JSON prêt à être téléchargé
+ */
+  async exportDbAsJson(): Promise<string> {
+    await this.dbReady;
+    const enseignants = await this.getAllEnseignants();
+    const divisions = await this.getAllDivisions();
+    const data = { enseignants, divisions };
+    return JSON.stringify(data, null, 2);
+  }
+
+  /**
+ * Vérifie si un JSON correspond au format attendu pour l'import de la base.
+ * @param json Le contenu JSON à vérifier
+ * @returns true si le format est correct, false sinon
+ */
+  isValidDbJson(json: string): boolean {
+    try {
+      const data = JSON.parse(json);
+      // Vérifie la présence des deux propriétés attendues
+      if (!data || typeof data !== 'object') return false;
+      if (!Array.isArray(data.enseignants) || !Array.isArray(data.divisions)) return false;
+
+      // Vérification basique de la structure d'un enseignant
+      if (data.enseignants.length > 0) {
+        const e = data.enseignants[0];
+        if (typeof e !== 'object' || !('id' in e) || !('nom' in e)) return false;
+      }
+      // Vérification basique de la structure d'une division
+      if (data.divisions.length > 0) {
+        const d = data.divisions[0];
+        if (typeof d !== 'object' || !('id' in d) || !('nom' in d)) return false;
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Importe une base de données depuis un JSON et écrase la base actuelle.
+   * @param json Le contenu JSON à importer
+   * @returns Promise<void>
+   */
+  async importDbFromJson(json: string): Promise<void> {
+    await this.dbReady;
+    if (!this.isValidDbJson(json)) {
+      throw new Error('Le fichier JSON ne correspond pas au format attendu.');
+    }
+    const data = JSON.parse(json);
+
+    // Efface les stores existants
+    if (this.db) {
+      // Supprime tous les enseignants
+      await new Promise<void>((resolve, reject) => {
+        const tx = this.db!.transaction('enseignants', 'readwrite');
+        const store = tx.objectStore('enseignants');
+        const clearReq = store.clear();
+        clearReq.onsuccess = () => resolve();
+        clearReq.onerror = () => reject(clearReq.error);
+      });
+      // Supprime toutes les divisions
+      await new Promise<void>((resolve, reject) => {
+        const tx = this.db!.transaction('divisions', 'readwrite');
+        const store = tx.objectStore('divisions');
+        const clearReq = store.clear();
+        clearReq.onsuccess = () => resolve();
+        clearReq.onerror = () => reject(clearReq.error);
+      });
+    }
+
+    // Réinjecte les données
+    if (Array.isArray(data.enseignants)) {
+      for (const enseignant of data.enseignants) {
+        await this.addEnseignant(enseignant);
+      }
+    }
+    if (Array.isArray(data.divisions)) {
+      for (const division of data.divisions) {
+        await this.addDivision(division);
+      }
+    }
+  }
 }

@@ -1,1 +1,132 @@
-<p>REPARTITOR : une application qui simplifie les conseils d'enseignement concernant la répartition des services !</p>
+<div class="flex items-center justify-center bg-neutral-100 py-12">
+    <div class="bg-white rounded shadow-lg p-8 w-full max-w-xl md:max-w-2xl lg:max-w-3xl">
+        <h1 class="text-xl font-bold mb-6 text-center text-orange-600 font-['Oxanium']">La répartition des
+            services d'enseignement simplifiée !</h1>
+        <div>
+            <div class="border rounded mb-2">
+                <input type="checkbox" id="acc1" class="peer hidden">
+                <label for="acc1"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-blue-100 peer-checked:bg-blue-200 rounded-t">
+                    <span class="font-semibold">A propos</span>
+                    <svg class="w-5 h-5 transition-transform duration-200 peer-checked:rotate-180" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </label>
+                <div class="p-4 bg-blue-50 peer-checked:block hidden rounded-b text-justify">
+                    Repartitor est un outil destiné à faciliter la gestion et
+                    la répartition des services d'enseignement dans votre établissement.
+                    Il permet de constituer de façon simple et intuitive les services
+                    de chaque enseignant d'une équipe disciplinaire en trois étapes.
+                    <!-- Timeline horizontale -->
+                    <div class="flex flex-col items-center my-8 w-full">
+                        <div class="flex flex-col md:flex-row items-start w-full max-w-3xl">
+                            <!-- Étape 1 -->
+                            <div class="flex-1 flex flex-col items-center mb-8 md:mb-0">
+                                <div
+                                    class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
+                                    1
+                                </div>
+                                <div class="bg-white border border-blue-200 rounded-lg p-4 text-center shadow w-full">
+                                    <span class="font-semibold text-blue-700">Enseignants</span>
+                                    <p class="text-sm mt-2 text-blue-900">
+                                        Ajoutez les différents enseignants faisant partie de l’équipe ainsi que les
+                                        informations nécessaires pour calculer leurs services.
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Espace -->
+                            <div class="flex md:flex-col items-center justify-center md:w-8 md:h-4 w-full h-2">
+                            </div>
+                            <!-- Étape 2 -->
+                            <div class="flex-1 flex flex-col items-center mb-8 md:mb-0">
+                                <div
+                                    class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
+                                    2
+                                </div>
+                                <div class="bg-white border border-blue-200 rounded-lg p-4 text-center shadow w-full">
+                                    <span class="font-semibold text-blue-700">Divisions</span>
+                                    <p class="text-sm mt-2 text-blue-900">
+                                        Ajoutez les différentes divisions ainsi que le nombre de chacune d’entre elles
+                                        pour
+                                        pouvoir calculer les besoins en heures.
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Espace -->
+                            <div class="flex md:flex-col items-center justify-center md:w-8 md:h-4 w-full h-2">
+                            </div>
+                            <!-- Étape 3 -->
+                            <div class="flex-1 flex flex-col items-center">
+                                <div
+                                    class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
+                                    3
+                                </div>
+                                <div class="bg-white border border-blue-200 rounded-lg p-4 text-center shadow w-full">
+                                    <span class="font-semibold text-blue-700">Répartition</span>
+                                    <p class="text-sm mt-2 text-blue-900">
+                                        Affectez des divisions à chaque enseignant pour constituer son service et
+                                        exportez
+                                        la répartition en format CSV.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded mb-2">
+                <input type="checkbox" id="acc2" class="peer hidden">
+                <label for="acc2"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-blue-100 peer-checked:bg-blue-200 rounded-t">
+                    <span class="font-semibold">Confidentialité des données</span>
+                    <svg class="w-5 h-5 transition-transform duration-200 peer-checked:rotate-180" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </label>
+                <div class="p-4 bg-blue-50 peer-checked:block hidden">
+                    <p class="mt-2 text-justify">
+                        Cette application utilise IndexedDB. C'est une base de données intégrée directement dans le
+                        navigateur,
+                        permettant de stocker et gérer des données localement, sans dépendre d’un serveur externe.
+                        Contrairement aux applications web traditionnelles qui nécessitent une connexion à internet pour
+                        accéder aux données, IndexedDB permet de conserver vos informations directement sur votre
+                        ordinateur ou appareil mobile.
+                    </p>
+                    <p class="mt-2 text-justify">
+                        L’intérêt pour vous ? Vous gardez un contrôle total sur vos données. En les stockant directement
+                        sur votre appareil,
+                        vous réduisez les risques liés à la confidentialité, limitez la dépendance aux services en ligne
+                        et assurez un accès rapide, même en mode hors connexion.
+                    </p>
+                </div>
+            </div>
+            <div class="border rounded">
+                <input type="checkbox" id="acc3" class="peer hidden">
+                <label for="acc3"
+                    class="flex justify-between items-center p-4 cursor-pointer bg-blue-100 peer-checked:bg-blue-200 rounded-t">
+                    <span class="font-semibold">Contrôles de l'interface</span>
+                    <svg class="w-5 h-5 transition-transform duration-200 peer-checked:rotate-180" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </label>
+                <div class="p-4 bg-blue-50 peer-checked:block hidden">
+                    <ol class="list-decimal pl-6">
+                        <li>Ajoutez vos enseignants et divisions.</li>
+                        <li>Attribuez les classes à chaque enseignant.</li>
+                        <li>Consultez et exportez les services calculés.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center mt-6">
+            <button type="button"
+                class="bg-orange-600 text-white border rounded text-xl py-2 px-4 mr-3 font-['Oxanium'] hover:bg-orange-700 transition"
+                [routerLink]="'/enseignants'">
+                Démarrer
+            </button>
+        </div>
+    </div>
+</div>
