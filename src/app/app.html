@@ -1,11 +1,11 @@
 <div class="flex flex-col min-h-screen">
-  <nav class="sticky top-0 z-50 bg-neutral-100 p-4">
+  <nav class="sticky top-0 z-50 bg-neutral-100 p-2 shadow-md">
     <app-header class="w-full"></app-header>
   </nav>
-  <main class="flex-grow w-full px-2 sm:px-4">
+  <main class="flex-grow w-full px-2 sm:px-4 py-4">
     <router-outlet></router-outlet>
   </main>
-  <footer class="sticky bottom-0 z-50 relative flex justify-center items-center bg-neutral-100 p-1">
-    <app-footer></app-footer>
+  <footer class="sticky bottom-0 z-40 w-full flex justify-center items-center bg-neutral-100 p-1 px-0">
+    <app-footer class="w-full z-45"></app-footer>
   </footer>
 </div>

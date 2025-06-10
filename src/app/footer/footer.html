@@ -1,6 +1,32 @@
-<div class="flex gap-8 p-1 text-center justify-center">
-    <span class="text-sm text-green-700">Apport postes : {{ApportHeures()| number:'1.2-2'}}</span>
-    <span class="text-sm text-red-700">Besoins : {{BesoinHeures()| number:'1.2-2'}}</span>
-    <span class="text-sm text-orange-700">Heures non pourvues : {{BesoinHeures() - HeuresAffectees()| number:'1.2-2'}}</span>
-    <span class="text-sm text-blue-700">Total HSA : {{CalculateTotalHSA()| number:'1.2-2'}}</span>
+<div class="w-full flex flex-wrap justify-center gap-4 p-2 shadow-inner rounded-t-md">
+    <div class="flex flex-col items-center min-w-[120px]">
+        <span class="text-xs text-gray-500">Apport postes</span>
+        <span class="font-semibold text-sm text-green-700">{{ ApportHeures() | number:'1.2-2' }}</span>
+    </div>
+    <div class="flex flex-col items-center min-w-[120px]">
+        <span class="text-xs text-gray-500">Besoins</span>
+        <span class="font-semibold text-sm text-red-700">{{ BesoinHeures() | number:'1.2-2' }}</span>
+    </div>
+    <div class="flex flex-col items-center min-w-[120px]">
+        <span class="text-xs text-gray-500">Heures non pourvues</span>
+        <span class="font-semibold text-sm text-orange-700">{{ BesoinHeures() - HeuresAffectees() | number:'1.2-2'
+            }}</span>
+    </div>
+    <div class="flex flex-col items-center min-w-[120px]">
+        <span class="text-xs text-gray-500">Total HSA</span>
+        <span class="font-semibold text-sm text-blue-700">{{ CalculateTotalHSA() | number:'1.2-2' }}</span>
+    </div>
+    <div class="flex flex-col items-center min-w-[120px]">
+        <span class="text-xs text-gray-500">Division(s) non affectée(s)</span>
+        <span *ngIf="DivisionsNonAffectees().length == 0">
+            <span class="font-semibold text-xs text-purple-700">Aucune</span>
+        </span>
+        <span *ngIf="DivisionsNonAffectees().length > 0">
+            <span *ngFor="let div of DivisionsNonAffectees().slice(0,3); let last = last">
+                <span class="font-semibold text-xs text-purple-700">{{ div.nom }} ({{ div.no }})</span>
+                <span *ngIf="!last">&nbsp;</span>
+            </span>
+            <span class="font-semibold text-xs text-purple-700" *ngIf="DivisionsNonAffectees().length > 3">...</span>
+        </span>
+    </div>
 </div>
