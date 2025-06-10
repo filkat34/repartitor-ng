@@ -57,10 +57,10 @@ export class Header {
     this.showModalDB = false;
   }
 
-  
-   /**
-   * Ferme la modaleDB
-   */
+
+  /**
+  * Ferme la modaleDB
+  */
   closeModalHelp() {
     this.showModalHelp = false;
   }
