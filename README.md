@@ -9,7 +9,7 @@ Repartitor est un outil destiné à faciliter les conseils d'enseignement. Il pe
 # Fonctionnalités
 
 * Interface de gestion des enseignants et des divisions avec un formulaire pour saisir, modifier, supprimer les données et un affichage sous forme de tableau;
-* interface simplifiée de constitution des services : chaque enseignant occupe une carte avec des boutons '+' et '-' pour lui affecter des divisions ;
+* interface simplifiée de constitution des services : chaque enseignant occupe une carte avec des boutons pour lui affecter ou enlever des divisions ;
 * calculs automatisés en fonction des informations saisies : apports postes, besoin en heures, HSA, nombre de divisions non affectées, etc ;
 * exportation, importation d'une base de données en format JSON et effacement de la base de données utilisée ;
 * exportation des données en format CSV.
