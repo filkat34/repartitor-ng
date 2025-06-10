@@ -158,47 +158,6 @@ export class GestionServices implements OnInit {
   }
 
 
-  /**
-   * 
-   * @returns Calcul du total des heures supplémentaires annuelles (HSA) pour tous les enseignants.
-   * Cette méthode parcourt la liste des enseignants, calcule les HSA pour chacun d'eux,
-   */
-  CalculateTotalHSA(): number {
-    let totalHSA = 0;
-    this.enseignants.forEach(enseignant => {
-      const hsa = this.CalculateHSA(enseignant);
-      if (hsa > 0) {
-        totalHSA += hsa;
-      }
-    });
-    return totalHSA;
-  }
-
-
-  /**
-   * Retourne une liste des divisions qui n'ont pas d'affectation d'enseignants.
-   * Pour chaque division, elle calcule le nombre de classes affectées et retourne celles qui n'ont pas d'affectation.
-   * @returns Liste des divisions qui n'ont pas d'affectation d'enseignants.
-   */
-  DivisionsNonAffectees(): { nom: string, no: number }[] {
-    // Obtenir les noms des divisions affectées et le nombre total des classes affectées de chaque division
-    const affecteesCount: Record<string, number> = {};
-    this.enseignants.forEach(e => {
-      (e.classes ?? []).forEach(c => {
-        affecteesCount[c.nom] = (affecteesCount[c.nom] || 0) + c.no;
-      });
-    });
-
-    // Pour chaque division, vérifier combien de classes sont affectées
-    // et retourner celles qui n'ont pas d'affectation
-    return this.divisions
-      .map(d => ({
-        nom: d.nom,
-        no: Math.max(0, d.nombreDivisions - (affecteesCount[d.nom] || 0))
-      }))
-      .filter(d => d.no > 0);
-  }
-
 
   /**
    * Exporte les données des enseignants dans un fichier CSV.

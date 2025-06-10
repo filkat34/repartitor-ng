@@ -21,11 +21,19 @@ export class GestionEnseignants implements OnInit {
     this.loadEnseignants();
   }
 
-  // Propriétés pour la gestion des enseignants
+
+  /**
+   * Propriétés du composant GestionEnseignants.
+   * - `nouvelEnseignant`: Objet partiel pour stocker les données du nouvel enseignant à ajouter ou modifier.
+   * - `enseignants`: Tableau d'enseignants chargés depuis la base de données.
+   * - `enseignantSelectionne`: Enseignant actuellement sélectionné pour modification ou suppression.
+   * - `isEditing`: Indicateur pour savoir si le composant est en mode édition (modification d'un enseignant).
+   */
   nouvelEnseignant: Partial<Enseignant> = {};
   enseignants: Enseignant[] = [];
   enseignantSelectionne: Enseignant | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
+
 
   /**
    * Méthode pour charger tous les enseignants depuis la base de données.
@@ -34,6 +42,7 @@ export class GestionEnseignants implements OnInit {
   async loadEnseignants() {
     this.enseignants = await this.db.getAllEnseignants(true);
   }
+
 
   /**
    * Méthode appelée lors de la soumission du formulaire pour ajouter ou modifier un enseignant.
@@ -94,6 +103,7 @@ export class GestionEnseignants implements OnInit {
     await this.loadEnseignants();
   }
 
+
   /**
    * Méthode pour définir les ORS en fonction du corps de l'enseignant.
    */
@@ -106,6 +116,7 @@ export class GestionEnseignants implements OnInit {
       this.nouvelEnseignant.ors = undefined;
     }
   }
+
 
   /**
    * Méthode pour sélectionner un enseignant.
@@ -147,4 +158,36 @@ export class GestionEnseignants implements OnInit {
     this.enseignantSelectionne = null;
     this.isEditing = false;
   }
+
+  /**
+ * Exporte tous les enseignants dans un fichier CSV.
+ */
+async exportEnseignantsToCSV() {
+  // 1. Récupérer les enseignants (déjà triés si tu veux)
+  const enseignants = await this.db.getAllEnseignants(true);
+
+  // 2. Construire le contenu CSV
+  const header = 'Nom,Corps,ORS,Quotité(%),ServiceMinimum';
+  const rows = enseignants.map(e =>
+    [
+      `"${e.nom}"`,
+      `"${e.corps}"`,
+      e.ors,
+      e.quotite,
+      e.service_plancher.toFixed(2)
+    ].join(',')
+  );
+  const csvContent = [header, ...rows].join('\n');
+
+  // 3. Créer un blob et déclencher le téléchargement
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'enseignants.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 }
