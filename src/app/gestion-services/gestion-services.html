@@ -7,7 +7,10 @@
 <div *ngIf="enseignants.length > 0" class="flex flex-wrap gap-4 justify-center mt-8">
   <div *ngFor="let enseignant of enseignants" class="border rounded shadow p-4 w-64 bg-white">
     <h2 class="text-xl text-center font-bold mb-1">{{ enseignant.nom }}</h2>
-    <h2 class="text-sm text-center mb-4">ORS : {{ enseignant.service_plancher }}</h2>
+    <h2 class="text-sm font-bold text-center text-green-700 mb-4"
+      [ngClass]="enseignant.service_plancher > CalculateService(enseignant) ? 'text-red-600' : ''">
+      ORS : {{ enseignant.service_plancher }}
+    </h2>
     <div *ngIf="divisions.length === 0" class="text-center text-sm text-red-600 mt-8 mb-8">
       Aucune division dans la base de données ! Commencez par en ajouter une pour pouvoir ensuite répartir les services.
     </div>
@@ -26,11 +29,22 @@
       </li>
     </ul>
     <hr class="my-4">
-    <h3 class="text-xl text-center text-blue-600 font-semi-bold mb-4 mt-4"
-    [ngClass]="CalculateService(enseignant) > enseignant.service_plancher ? 'text-red-600' : ''">
-  Service : {{CalculateService(enseignant)| number:'1.2-2'}}
-</h3>
-    <h3 class="text-xl text-center font-semi-bold">
+
+    <h3 class="text-xl text-center font-semi-bold mb-2">Service</h3>
+    <div class="grid grid-cols-2 gap-4 items-center mb-2">
+      <div class="text-center">
+        <span class="block text-xs">Sans pondérations</span>
+        <span class="block text-2xl">{{ CalculateServiceNonPondere(enseignant) | number:'1.1-1' }}</span>
+      </div>
+      <div class="text-center">
+        <span class="block text-xs">Avec pondérations</span>
+        <span class="block text-2xl"
+          [ngClass]="CalculateService(enseignant) > enseignant.service_plancher ? 'text-red-600' : 'text-blue-600'">
+          {{ CalculateService(enseignant) | number:'1.2-2' }}
+        </span>
+      </div>
+    </div>
+    <h3 class="text-lg text-center font-semi-bold">
       HSA : {{ (CalculateHSA(enseignant)) < 0 ? 0 : (CalculateHSA(enseignant)| number:'1.2-2') }} </h3>
   </div>
 </div>

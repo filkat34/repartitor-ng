@@ -111,6 +111,7 @@ export class GestionDivisions implements OnInit {
         division_examen: this.nouvelleDivision.division_examen!,
         ponderation: this.nouvelleDivision.ponderation!,
         horaire_enseignant: ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) + (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2) * (this.nouvelleDivision.ponderation ?? 1),
+        horaire_enseignant_sansponderation: ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) + (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2)
       };
       await this.db.addDivision(division);
     }

@@ -64,7 +64,7 @@ export class Footer implements OnInit, OnDestroy {
     if (!enseignant.classes) return 0;
     return enseignant.classes.reduce((total, c) => {
       const division = this.divisions.find(d => d.nom === c.nom);
-      return total + (division ? division.horaire_enseignant * c.no : 0);
+      return total + (division ? division.horaire_enseignant_sansponderation * c.no : 0);
     }, 0);
   }
 
@@ -134,7 +134,7 @@ export class Footer implements OnInit, OnDestroy {
   BesoinHeures(): number {
     if (!this.divisions) return 0;
     return this.divisions.reduce(
-      (total, division) => total + (division.horaire_enseignant || 0) * (division.nombreDivisions || 0),
+      (total, division) => total + (division.horaire_enseignant_sansponderation || 0) * (division.nombreDivisions || 0),
       0
     );
   }

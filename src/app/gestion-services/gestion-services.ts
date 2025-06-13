@@ -131,15 +131,79 @@ export class GestionServices implements OnInit {
 
 
   /**
-   * Calcule le service total d'un enseignant en fonction des classes affectées.
+   * Calcule le service total d'un enseignant en fonction des classes affectées
+   * la pondération n'est appliqyée que pour les 10 premières heures d'examen.
+   * Les heures au-delà de 10 sont comptées sans pondération.
    * @param enseignant 
    * @returns 
    */
   CalculateService(enseignant: Enseignant): number {
     if (!enseignant.classes) return 0;
+
+    // 1. Séparer les classes à examen et les autres
+    const classesExamen = enseignant.classes
+      .map(c => {
+        const division = this.divisions.find(d => d.nom === c.nom);
+        return division && division.division_examen === 1
+          ? { c, division }
+          : null;
+      })
+      .filter(Boolean) as { c: any, division: Division }[];
+
+    const classesNonExamen = enseignant.classes
+      .map(c => {
+        const division = this.divisions.find(d => d.nom === c.nom);
+        return division && division.division_examen !== 1
+          ? { c, division }
+          : null;
+      })
+      .filter(Boolean) as { c: any, division: Division }[];
+
+    // 2. Calculer le total d'heures "examen" (avant pondération)
+    let heuresExamen = 0;
+    classesExamen.forEach(({ c, division }) => {
+      heuresExamen += division.horaire_enseignant_sansponderation * c.no;
+    });
+
+    // 3. Appliquer la pondération sur les 10 premières heures d'examen uniquement
+    let heuresRestantesPonderees = Math.min(10, heuresExamen);
+    let heuresRestantesNonPonderees = Math.max(0, heuresExamen - 10);
+
+    let service = 0;
+
+    // 4. Répartir la pondération sur les classes à examen, en traitant heure par heure
+    for (const { c, division } of classesExamen) {
+      let heuresClasse = division.horaire_enseignant_sansponderation * c.no;
+      let heuresPonderees = Math.min(heuresClasse, heuresRestantesPonderees);
+      let heuresNonPonderees = heuresClasse - heuresPonderees;
+
+      // Ajout des heures pondérées
+      service += heuresPonderees * division.ponderation;
+      heuresRestantesPonderees -= heuresPonderees;
+
+      // Ajout des heures non pondérées
+      service += heuresNonPonderees;
+      heuresRestantesNonPonderees -= heuresNonPonderees;
+    }
+
+    // 5. Ajouter les heures des autres classes (non examen) sans pondération
+    for (const { c, division } of classesNonExamen) {
+      service += division.horaire_enseignant_sansponderation * c.no;
+    }
+
+    return service;
+  }
+
+  /**
+   * Calcule le service total d'un enseignant en fonction des classes affectées sans la pondération
+   * @param enseignant 
+   * @returns 
+   */
+  CalculateServiceNonPondere(enseignant: Enseignant): number {
+    if (!enseignant.classes) return 0;
     return enseignant.classes.reduce((total, c) => {
       const division = this.divisions.find(d => d.nom === c.nom);
-      return total + (division ? division.horaire_enseignant * c.no : 0);
+      return total + (division ? division.horaire_enseignant_sansponderation * c.no : 0);
     }, 0);
   }
 
@@ -175,10 +239,11 @@ export class GestionServices implements OnInit {
   exportToCSV() {
     const rows: string[] = [];
     // En-tête
-    rows.push('Enseignant,ORS,Quotité (%),Classes (nombre),Service,HSA');
+    rows.push('Enseignant,ORS,Quotité (%),Classes (nombre),Service,Service Pondéré,HSA');
 
     this.enseignants.forEach(enseignant => {
-      const service = Number(this.CalculateService(enseignant).toFixed(2));
+      const service = Number(this.CalculateServiceNonPondere(enseignant).toFixed(2));
+      const servicePondere = Number(this.CalculateService(enseignant).toFixed(2));
       let hsa = Number(this.CalculateHSA(enseignant).toFixed(2));
       if (hsa < 0) hsa = 0;
       let classesStr = '';
@@ -188,7 +253,7 @@ export class GestionServices implements OnInit {
           .join(', ');
       }
       rows.push(
-        `"${enseignant.nom}",${enseignant.ors},${enseignant.quotite},"${classesStr}",${service},${hsa}`
+        `"${enseignant.nom}",${enseignant.ors},${enseignant.quotite},"${classesStr}",${service},${servicePondere},${hsa}`
       );
     });
 
