@@ -122,8 +122,10 @@ export class Footer implements OnInit, OnDestroy {
    */
   ApportHeures(): number {
     if (!this.enseignants) return 0;
-    return this.enseignants.reduce((total, enseignant) => total + (enseignant.service_plancher || 0), 0);
-  }
+    return this.enseignants
+      .filter(enseignant => enseignant.corps !== 'BMP')
+      .reduce((total, enseignant) => total + (enseignant.service_plancher || 0), 0);
+}
 
 
   /**
