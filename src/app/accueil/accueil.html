@@ -5,16 +5,18 @@
     </h1>
     <div>
       <section class="mb-8">
-        <p class="text-justify mb-4">
-          Repartitor est un outil destiné à faciliter les conseils d'enseignement.
-          Il permet de constituer, grâce à une interface simple et intuitive, les services des enseignants d'une équipe disciplinaire en trois étapes.
+        <p class="text-justify mb-4 text-lg">
+          Repartitor est une application de gestion destinée à faciliter les conseils d'enseignement.
+          Il permet de constituer, grâce à une interface simple et intuitive, les services des enseignants d'une équipe
+          disciplinaire en trois étapes :
         </p>
         <!-- Timeline horizontale -->
         <div class="flex flex-col items-center my-8 w-full">
           <div class="flex flex-col md:flex-row items-start w-full max-w-3xl">
             <!-- Étape 1 -->
             <div class="flex-1 flex flex-col items-center mb-8 md:mb-0">
-              <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
+              <div
+                class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
                 1
               </div>
               <div class="bg-white border border-blue-200 rounded-lg p-4 text-center shadow w-full">
@@ -29,7 +31,8 @@
             <div class="flex md:flex-col items-center justify-center md:w-8 md:h-4 w-full h-2"></div>
             <!-- Étape 2 -->
             <div class="flex-1 flex flex-col items-center mb-8 md:mb-0">
-              <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
+              <div
+                class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
                 2
               </div>
               <div class="bg-white border border-blue-200 rounded-lg p-4 text-center shadow w-full">
@@ -44,14 +47,14 @@
             <div class="flex md:flex-col items-center justify-center md:w-8 md:h-4 w-full h-2"></div>
             <!-- Étape 3 -->
             <div class="flex-1 flex flex-col items-center">
-              <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
+              <div
+                class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 font-bold shadow-md border-4 border-blue-100">
                 3
               </div>
               <div class="bg-white border border-blue-200 rounded-lg p-4 text-center shadow w-full">
                 <span class="font-semibold text-blue-700">Répartition</span>
                 <p class="text-sm mt-2 text-blue-900">
-                  Affectez des divisions à chaque enseignant pour constituer son service et
-                  exportez la répartition en format CSV.
+                  Affectez des divisions à chaque enseignant pour constituer son service.
                 </p>
               </div>
             </div>
@@ -59,14 +62,49 @@
         </div>
       </section>
       <section class="mb-8">
-        <p class="mt-2 text-justify">
-          Cette application utilise IndexedDB. C'est une base de données intégrée directement dans le navigateur,
-          permettant de stocker et gérer des données localement, sans dépendre d’un serveur externe.
-          Contrairement aux applications web traditionnelles qui nécessitent une connexion à internet pour
-          accéder aux données, IndexedDB permet de conserver vos informations directement sur votre
-          ordinateur ou appareil mobile. Vous gardez donc non seulement un contrôle total sur vos données mais pouvez même utiliser
-          l'application en mode hors connexion.
+        <p class="mt-2 text-justify text-lg">
+          Vous pouvez à tout moment revenir sur une étape précédente pour modifier les données saisies ou en ajouter de
+          nouvelles.
+          Chaque étape est accessible via le menu de navigation en haut de l'écran et propose également la posibilité
+          d'exporter
+          les données saisies au format CSV.
         </p>
+      </section>
+      <section class="mb-8">
+        <section class="mb-8">
+          <div>
+            <div *ngFor="let item of accordionItems; let i = index" class="mb-2">
+              <button type="button"
+                class="w-full flex justify-between items-center px-4 py-3 bg-blue-100 text-blue-800 font-semibold rounded-t focus:outline-none"
+                (click)="openAccordion === i ? openAccordion = null : openAccordion = i">
+                {{ item.title }}
+                <span>
+                  <svg *ngIf="openAccordion !== i" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  <svg *ngIf="openAccordion === i" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                  </svg>
+                </span>
+              </button>
+              <div *ngIf="openAccordion === i"
+                class="px-4 py-3 bg-white border border-t-0 border-blue-200 rounded-b shadow">
+                <ul *ngIf="i === 0" class="space-y-2">
+                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[0] }}</li>
+                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[1] }}</li>
+                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[2] }}</li>
+                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[3] }}</li>
+                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[4] }}</li>
+                </ul>
+                <span *ngIf="i !== 0">
+                  {{ item.content }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
       <div class="flex justify-center mt-6">
         <button type="button"
@@ -77,8 +115,9 @@
       </div>
       <div class="flex justify-center mt-6">
         <a href="https://github.com/filkat34/repartitor-ng">
-        <i class="fa-brands fa-github text-3xl opacity-60 hover:opacity-90 transition-opacity duration-200 cursor-pointer"></i>
+          <i
+            class="fa-brands fa-github text-3xl opacity-60 hover:opacity-90 transition-opacity duration-200 cursor-pointer"></i>
         </a>
+      </div>
     </div>
   </div>
-</div>

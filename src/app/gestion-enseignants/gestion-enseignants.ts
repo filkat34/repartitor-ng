@@ -29,7 +29,9 @@ export class GestionEnseignants implements OnInit {
    * - `enseignantSelectionne`: Enseignant actuellement sélectionné pour modification ou suppression.
    * - `isEditing`: Indicateur pour savoir si le composant est en mode édition (modification d'un enseignant).
    */
-  nouvelEnseignant: Partial<Enseignant> = {};
+  nouvelEnseignant: Partial<Enseignant> = {
+    quotite:100, // Valeur par défaut pour la quotité
+  };
   enseignants: Enseignant[] = [];
   enseignantSelectionne: Enseignant | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
@@ -99,7 +101,10 @@ export class GestionEnseignants implements OnInit {
       };
       await this.db.addEnseignant(enseignant);
     }
-    this.nouvelEnseignant = {};
+    this.nouvelEnseignant = {
+      quotite: 100, // Réinitialisation de la quotité à 100% après ajout/modification
+      corps: '', // Réinitialisation du corps
+    };
     await this.loadEnseignants();
   }
 
@@ -154,9 +159,13 @@ export class GestionEnseignants implements OnInit {
    * @param form 
    */
   clearInputs(form: NgForm) {
-    form.resetForm();
+    form.resetForm({ quotite: 100, corps: '' }); // Réinitialisation des champs du formulaire
     this.enseignantSelectionne = null;
     this.isEditing = false;
+    this.nouvelEnseignant = {
+      quotite: 100, // Réinitialisation de la quotité à 100% après ajout/modification
+      corps: '', // Réinitialisation du corps
+    };
   }
 
   /**

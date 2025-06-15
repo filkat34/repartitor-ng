@@ -68,20 +68,20 @@ export class Footer implements OnInit, OnDestroy {
     }, 0);
   }
 
-  
+
   /**
    * Calcul du nombre total d'heures affectées à tous les enseignants.
    * Cette méthode parcourt la liste des enseignants et additionne le service calculé pour chacun d'eux.
    * @returns 
    */
   HeuresAffectees(): number {
-  if (!this.enseignants) return 0;
-  let total = 0;
-  for (const enseignant of this.enseignants) {
-    total += this.CalculateService(enseignant);
+    if (!this.enseignants) return 0;
+    let total = 0;
+    for (const enseignant of this.enseignants) {
+      total += this.CalculateService(enseignant);
+    }
+    return total;
   }
-  return total;
-}
 
 
   /**
@@ -105,14 +105,16 @@ export class Footer implements OnInit, OnDestroy {
    */
   CalculateTotalHSA(): number {
     let totalHSA = 0;
-    this.enseignants.forEach(enseignant => {
-      const hsa = this.CalculateHSA(enseignant);
-      if (hsa > 0) {
-        totalHSA += hsa;
-      }
-    });
+    this.enseignants
+      .filter(enseignant => enseignant.corps !== 'BMP')// Exclure les enseignants du corps BMP dans ce calcul
+      .forEach(enseignant => {
+        const hsa = this.CalculateHSA(enseignant);
+        if (hsa > 0) {
+          totalHSA += hsa;
+        }
+      });
     return totalHSA;
-  }
+}
 
 
   /**
@@ -125,7 +127,7 @@ export class Footer implements OnInit, OnDestroy {
     return this.enseignants
       .filter(enseignant => enseignant.corps !== 'BMP')
       .reduce((total, enseignant) => total + (enseignant.service_plancher || 0), 0);
-}
+  }
 
 
   /**
@@ -141,11 +143,11 @@ export class Footer implements OnInit, OnDestroy {
     );
   }
 
-    /**
-   * Retourne une liste des divisions qui n'ont pas d'affectation d'enseignants.
-   * Pour chaque division, elle calcule le nombre de classes affectées et retourne celles qui n'ont pas d'affectation.
-   * @returns Liste des divisions qui n'ont pas d'affectation d'enseignants.
-   */
+  /**
+ * Retourne une liste des divisions qui n'ont pas d'affectation d'enseignants.
+ * Pour chaque division, elle calcule le nombre de classes affectées et retourne celles qui n'ont pas d'affectation.
+ * @returns Liste des divisions qui n'ont pas d'affectation d'enseignants.
+ */
   DivisionsNonAffectees(): { nom: string, no: number }[] {
     // Obtenir les noms des divisions affectées et le nombre total des classes affectées de chaque division
     const affecteesCount: Record<string, number> = {};
@@ -163,6 +165,57 @@ export class Footer implements OnInit, OnDestroy {
         no: Math.max(0, d.nombreDivisions - (affecteesCount[d.nom] || 0))
       }))
       .filter(d => d.no > 0);
+  }
+
+
+  /**
+   * Affiche les divisions non affectées.
+   * @returns Retourne une chaîne de caractères affichant les divisions non affectées.
+   * Si plusieurs divisions sont non affectées, seuls les trois premiers sont affichés suivis de "...".
+   */
+  getDivisionsNonAffecteesDisplay(): string {
+  const value = this.DivisionsNonAffectees();
+  if (Array.isArray(value) && value.length > 0) {
+    const displayed = value.slice(0, 3).map(div => `${div.nom} (${div.no})`);
+    let result = displayed.join(', ');
+    if (value.length > 3) {
+      result += '...';
+    }
+    return result;
+  }
+  return "Aucune";
+}
+
+  /**
+   * Enseignants en sous-service
+   * @returns Retourne une liste des enseignants qui sont en sous-service.
+   * Un enseignant est considéré en sous-service si son service plancher est supérieur au service calculé.
+   */
+  getEnseignantsSousService(): string[] | string {
+    if (!this.enseignants) return "Aucun";
+    const sousService = this.enseignants
+      .filter(enseignant => enseignant.service_plancher > this.CalculateService(enseignant))
+      .map(enseignant => enseignant.nom);
+    return sousService.length > 0 ? sousService : "Aucun";
+  }
+
+
+  /**
+   * Affiche les enseignants en sous-service.
+   * @returns Retourne une chaîne de caractères affichant les enseignants en sous-service.
+   * Si plusieurs enseignants sont en sous-service, seuls les trois premiers sont affichés suivis de "...".
+   */
+  getEnseignantsSousServiceDisplay(): string {
+    const value = this.getEnseignantsSousService();
+    if (Array.isArray(value) && value.length > 0) {
+      const displayed = value.slice(0, 3);
+      let result = displayed.join(', ');
+      if (value.length > 3) {
+        result += '...';
+      }
+      return result;
+    }
+    return typeof value === 'string' ? value : '';
   }
 
 }

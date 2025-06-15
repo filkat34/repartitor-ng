@@ -22,7 +22,16 @@ export class GestionDivisions implements OnInit {
   }
 
   // Propriétés pour la gestion des divisions
-  nouvelleDivision: Partial<Division> = {};
+  nouvelleDivision: Partial<Division> = {
+    nom: '',
+    nombreDivisions: 1,
+    horaire_eleve_classe_entiere: 0,
+    horaire_eleve_demi_groupe: 0,
+    division_examen: 0,
+    ponderation: 1,
+    horaire_enseignant: 0,
+    horaire_enseignant_sansponderation: 0
+  };
   divisions: Division[] = [];
   divisionSelectionnee: Division | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
@@ -51,9 +60,28 @@ export class GestionDivisions implements OnInit {
    * @param form 
    */
   clearInputs(form: NgForm) {
-    form.resetForm();
+    form.resetForm({
+      nom: '',
+      nombreDivisions: 1,
+      horaire_eleve_classe_entiere: 0,
+      horaire_eleve_demi_groupe: 0,
+      division_examen: 0,
+      ponderation: 1,
+      horaire_enseignant: 0,
+      horaire_enseignant_sansponderation: 0
+    });
     this.divisionSelectionnee = null;
     this.isEditing = false;
+    this.nouvelleDivision = {
+      nom: '',
+      nombreDivisions: 1,
+      horaire_eleve_classe_entiere: 0,
+      horaire_eleve_demi_groupe: 0,
+      division_examen: 0,
+      ponderation: 1,
+      horaire_enseignant: 0,
+      horaire_enseignant_sansponderation: 0
+    };
   }
 
   /**
@@ -115,7 +143,16 @@ export class GestionDivisions implements OnInit {
       };
       await this.db.addDivision(division);
     }
-    this.nouvelleDivision = {};
+    this.nouvelleDivision = {
+      nom: '',
+      nombreDivisions: 1,
+      horaire_eleve_classe_entiere: 0,
+      horaire_eleve_demi_groupe: 0,
+      division_examen: 0,
+      ponderation: 1,
+      horaire_enseignant: 0,
+      horaire_enseignant_sansponderation: 0
+    };
     await this.loadDivisions();
   }
 

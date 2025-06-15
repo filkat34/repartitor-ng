@@ -6,7 +6,7 @@
       class="flex flex-wrap justify-center items-center gap-x-4 gap-y-2">
       <label class="flex items-center">
         Nom :
-        <input type="text" name="nom" [(ngModel)]="nouvelEnseignant.nom" required
+        <input type="text" maxlength="17" name="nom" [(ngModel)]="nouvelEnseignant.nom" required
           class="border border-gray-400 rounded px-2 ml-2" />
       </label>
       <label class="flex items-center">
@@ -26,7 +26,7 @@
       </label>
       <label class="flex items-center">
         Quotité travaillée (%) :
-        <input type="number" name="quotite" [(ngModel)]="nouvelEnseignant.quotite" min="0" max="100" required
+        <input type="number" step="10" name="quotite" [(ngModel)]="nouvelEnseignant.quotite" min="0" max="100" required
           class="border border-gray-400 rounded px-2 ml-2 w-16 text-right" />
       </label>
       <div class="flex items-center gap-1 mt-2 md:mt-0">
@@ -65,14 +65,14 @@
 </div>
 
 <div *ngIf="enseignants.length > 0" class="overflow-x-auto mt-4 px-2" style="max-height: 50vh; overflow-y:auto;">
-  <table class="table-auto w-full border border-gray-300 rounded-lg overflow-hidden shadow">
-    <thead class="bg-blue-100">
+  <table class="table-auto w-full border border-gray-300 rounded-lg shadow">
+    <thead class="sticky top-0 bg-blue-100">
       <tr>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Nom</th>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Corps</th>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">ORS</th>
-        <th class="px-4 py-2 text-left font-semibold text-blue-800">Quotité (%)</th>
-        <th class="px-4 py-2 text-left font-semibold text-blue-800">Service (min)</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Quotité</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Service</th>
       </tr>
     </thead>
     <tbody>
@@ -81,7 +81,7 @@
         <td class="border-t px-4 py-2">{{ enseignant.nom }}</td>
         <td class="border-t px-4 py-2">{{ enseignant.corps }}</td>
         <td class="border-t px-4 py-2 text-left">{{ enseignant.ors }}</td>
-        <td class="border-t px-4 py-2 text-left">{{ enseignant.quotite }}</td>
+        <td class="border-t px-4 py-2 text-left">{{ enseignant.quotite }}%</td>
         <td class="border-t px-4 py-2 text-left">{{ enseignant.service_plancher | number:'1.2-2' }}</td>
       </tr>
     </tbody>
