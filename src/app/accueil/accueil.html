@@ -7,7 +7,7 @@
       <section class="mb-8">
         <p class="text-justify mb-4 text-lg">
           Repartitor est une application de gestion destinée à faciliter les conseils d'enseignement.
-          Il permet de constituer, grâce à une interface simple et intuitive, les services des enseignants d'une équipe
+          Elle permet de constituer, grâce à une interface simple et intuitive, les services des enseignants d'une équipe
           disciplinaire en trois étapes :
         </p>
         <!-- Timeline horizontale -->
@@ -92,11 +92,11 @@
               <div *ngIf="openAccordion === i"
                 class="px-4 py-3 bg-white border border-t-0 border-blue-200 rounded-b shadow">
                 <ul *ngIf="i === 0" class="space-y-2">
-                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[0] }}</li>
-                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[1] }}</li>
-                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[2] }}</li>
-                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[3] }}</li>
-                  <li class="mb-2 list-disc list-inside text-blue-900">{{ item.content[4] }}</li>
+                  <li class="relative pl-6 before:content-['✓'] before:absolute before:left-0 before:text-blue-500">{{ item.content[0] }}</li>
+                  <li class="relative pl-6 before:content-['✓'] before:absolute before:left-0 before:text-blue-500">{{ item.content[1] }}</li>
+                  <li class="relative pl-6 before:content-['✓'] before:absolute before:left-0 before:text-blue-500">{{ item.content[2] }}</li>
+                  <li class="relative pl-6 before:content-['✓'] before:absolute before:left-0 before:text-blue-500">{{ item.content[3] }}</li>
+                  <li class="relative pl-6 before:content-['✓'] before:absolute before:left-0 before:text-blue-500">{{ item.content[4] }}</li>
                 </ul>
                 <span *ngIf="i !== 0">
                   {{ item.content }}
