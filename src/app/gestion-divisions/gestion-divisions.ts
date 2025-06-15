@@ -148,15 +148,15 @@ export class GestionDivisions implements OnInit {
     const divisions = await this.db.getAllDivisions(true); // true si tu veux trier
 
     // 2. Construire le contenu CSV
-    const header = 'Niveau,NombreDivisions,HeuresClasseEntiere,HeuresDemiGroupe,Ponderation,HeuresProf';
+    const header = 'Niveau,NombreDivisions,HeuresClasseEntiere,HeuresDemiGroupe,HeuresProfSansPonderation,CoeffPonderation';
     const rows = divisions.map(d =>
       [
         `"${d.nom}"`,
         d.nombreDivisions,
         d.horaire_eleve_classe_entiere,
         d.horaire_eleve_demi_groupe,
+        d.horaire_enseignant_sansponderation,
         d.ponderation,
-        d.horaire_enseignant
       ].join(',')
     );
     const csvContent = [header, ...rows].join('\n');
