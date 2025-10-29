@@ -9,11 +9,10 @@ import { Subscription } from 'rxjs';
   selector: 'app-footer',
   imports: [CommonModule],
   templateUrl: './footer.html',
-  styleUrl: './footer.css'
+  styleUrl: './footer.css',
 })
 export class Footer implements OnInit, OnDestroy {
-
-  constructor(private db: IndexedDb) { }
+  constructor(private db: IndexedDb) {}
 
   /**
    * Méthode d'initialisation du composant.
@@ -24,7 +23,6 @@ export class Footer implements OnInit, OnDestroy {
     this.dbSub = this.db.dbChanged$.subscribe(() => this.refreshData());
   }
 
-
   /**
    * Méthode de destruction du composant.
    * Elle est appelée lorsque le composant est détruit.
@@ -32,7 +30,6 @@ export class Footer implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.dbSub?.unsubscribe();
   }
-
 
   /**
    * Méthode pour rafraîchir les données des enseignants et des divisions.
@@ -43,36 +40,36 @@ export class Footer implements OnInit, OnDestroy {
     this.divisions = await this.db.getAllDivisions(true);
   }
 
-
   /**
    * Propriétés du composant GestionServices.
    * - `enseignants`: Liste des enseignants chargés depuis la base de données.
    * - `divisions`: Liste des divisions chargées depuis la base de données.
-   * - `dbSub`: Subscription pour écouter les changements de la base de données.
+   * - `dbSub`: Souscription pour écouter les changements de la base de données.
    */
   enseignants: Enseignant[] = [];
   divisions: Division[] = [];
   private dbSub!: Subscription;
 
-
   /**
    * Calcule le service total d'un enseignant en fonction des classes affectées.
-   * @param enseignant 
-   * @returns 
+   * @param enseignant
+   * @returns
    */
   CalculateService(enseignant: Enseignant): number {
     if (!enseignant.classes) return 0;
     return enseignant.classes.reduce((total, c) => {
-      const division = this.divisions.find(d => d.nom === c.nom);
-      return total + (division ? division.horaire_enseignant_sansponderation * c.no : 0);
+      const division = this.divisions.find((d) => d.nom === c.nom);
+      return (
+        total +
+        (division ? division.horaire_enseignant_sansponderation * c.no : 0)
+      );
     }, 0);
   }
-
 
   /**
    * Calcul du nombre total d'heures affectées à tous les enseignants.
    * Cette méthode parcourt la liste des enseignants et additionne le service calculé pour chacun d'eux.
-   * @returns 
+   * @returns
    */
   HeuresAffectees(): number {
     if (!this.enseignants) return 0;
@@ -83,76 +80,78 @@ export class Footer implements OnInit, OnDestroy {
     return total;
   }
 
-
   /**
    * Calcul du nombre d'heures supplémentaires annuelles (HSA) pour un enseignant.
    * Il s'agit de la différence entre le service total calculé et le service plancher de l'enseignant.
-   * @param enseignant 
-   * @returns 
+   * @param enseignant
+   * @returns
    */
   CalculateHSA(enseignant: Enseignant): number {
     if (!enseignant.classes) return 0;
     else {
-      return this.CalculateService(enseignant) - enseignant.service_plancher
+      return this.CalculateService(enseignant) - enseignant.service_plancher;
     }
   }
 
-
   /**
-   * 
+   * Calcul du total des heures supplémentaires annuelles (HSA) pour tous les enseignants.
    * @returns Calcul du total des heures supplémentaires annuelles (HSA) pour tous les enseignants.
    * Cette méthode parcourt la liste des enseignants, calcule les HSA pour chacun d'eux,
    */
   CalculateTotalHSA(): number {
     let totalHSA = 0;
     this.enseignants
-      .filter(enseignant => enseignant.corps !== 'BMP')// Exclure les enseignants du corps BMP dans ce calcul
-      .forEach(enseignant => {
+      .filter((enseignant) => enseignant.corps !== 'BMP') // Exclure les enseignants du corps BMP dans ce calcul
+      .forEach((enseignant) => {
         const hsa = this.CalculateHSA(enseignant);
         if (hsa > 0) {
           totalHSA += hsa;
         }
       });
     return totalHSA;
-}
-
+  }
 
   /**
    * Calcule le total des heures apportées par les enseignants.
    * Il s'agit de la somme des services planchers de tous les enseignants.
-   * @returns 
+   * @returns
    */
   ApportHeures(): number {
     if (!this.enseignants) return 0;
     return this.enseignants
-      .filter(enseignant => enseignant.corps !== 'BMP')
-      .reduce((total, enseignant) => total + (enseignant.service_plancher || 0), 0);
+      .filter((enseignant) => enseignant.corps !== 'BMP')
+      .reduce(
+        (total, enseignant) => total + (enseignant.service_plancher || 0),
+        0
+      );
   }
-
 
   /**
    * Calcule le nombre total d'heures nécessaires pour les divisions.
    * Il s'agit de la somme des horaires enseignants multipliés par le nombre de divisions pour chaque division.
-   * @returns 
+   * @returns
    */
   BesoinHeures(): number {
     if (!this.divisions) return 0;
     return this.divisions.reduce(
-      (total, division) => total + (division.horaire_enseignant_sansponderation || 0) * (division.nombreDivisions || 0),
+      (total, division) =>
+        total +
+        (division.horaire_enseignant_sansponderation || 0) *
+          (division.nombreDivisions || 0),
       0
     );
   }
 
   /**
- * Retourne une liste des divisions qui n'ont pas d'affectation d'enseignants.
- * Pour chaque division, elle calcule le nombre de classes affectées et retourne celles qui n'ont pas d'affectation.
- * @returns Liste des divisions qui n'ont pas d'affectation d'enseignants.
- */
-  DivisionsNonAffectees(): { nom: string, no: number }[] {
+   * Retourne une liste des divisions qui n'ont pas d'affectation d'enseignants.
+   * Pour chaque division, elle calcule le nombre de classes affectées et retourne celles qui n'ont pas d'affectation.
+   * @returns Liste des divisions qui n'ont pas d'affectation d'enseignants.
+   */
+  DivisionsNonAffectees(): { nom: string; no: number }[] {
     // Obtenir les noms des divisions affectées et le nombre total des classes affectées de chaque division
     const affecteesCount: Record<string, number> = {};
-    this.enseignants.forEach(e => {
-      (e.classes ?? []).forEach(c => {
+    this.enseignants.forEach((e) => {
+      (e.classes ?? []).forEach((c) => {
         affecteesCount[c.nom] = (affecteesCount[c.nom] || 0) + c.no;
       });
     });
@@ -160,13 +159,12 @@ export class Footer implements OnInit, OnDestroy {
     // Pour chaque division, vérifier combien de classes sont affectées
     // et retourner celles qui n'ont pas d'affectation
     return this.divisions
-      .map(d => ({
+      .map((d) => ({
         nom: d.nom,
-        no: Math.max(0, d.nombreDivisions - (affecteesCount[d.nom] || 0))
+        no: Math.max(0, d.nombreDivisions - (affecteesCount[d.nom] || 0)),
       }))
-      .filter(d => d.no > 0);
+      .filter((d) => d.no > 0);
   }
-
 
   /**
    * Affiche les divisions non affectées.
@@ -174,17 +172,19 @@ export class Footer implements OnInit, OnDestroy {
    * Si plusieurs divisions sont non affectées, seuls les trois premiers sont affichés suivis de "...".
    */
   getDivisionsNonAffecteesDisplay(): string {
-  const value = this.DivisionsNonAffectees();
-  if (Array.isArray(value) && value.length > 0) {
-    const displayed = value.slice(0, 3).map(div => `${div.nom} (${div.no})`);
-    let result = displayed.join(', ');
-    if (value.length > 3) {
-      result += '...';
+    const value = this.DivisionsNonAffectees();
+    if (Array.isArray(value) && value.length > 0) {
+      const displayed = value
+        .slice(0, 3)
+        .map((div) => `${div.nom} (${div.no})`);
+      let result = displayed.join(', ');
+      if (value.length > 3) {
+        result += '...';
+      }
+      return result;
     }
-    return result;
+    return 'Aucune';
   }
-  return "Aucune";
-}
 
   /**
    * Enseignants en sous-service
@@ -192,13 +192,15 @@ export class Footer implements OnInit, OnDestroy {
    * Un enseignant est considéré en sous-service si son service plancher est supérieur au service calculé.
    */
   getEnseignantsSousService(): string[] | string {
-    if (!this.enseignants) return "Aucun";
+    if (!this.enseignants) return 'Aucun';
     const sousService = this.enseignants
-      .filter(enseignant => enseignant.service_plancher > this.CalculateService(enseignant))
-      .map(enseignant => enseignant.nom);
-    return sousService.length > 0 ? sousService : "Aucun";
+      .filter(
+        (enseignant) =>
+          enseignant.service_plancher > this.CalculateService(enseignant)
+      )
+      .map((enseignant) => enseignant.nom);
+    return sousService.length > 0 ? sousService : 'Aucun';
   }
-
 
   /**
    * Affiche les enseignants en sous-service.
@@ -218,4 +220,11 @@ export class Footer implements OnInit, OnDestroy {
     return typeof value === 'string' ? value : '';
   }
 
+  getDifferentielApportBesoin(apportPostes: number, besoins: number): number {
+    let differentiel = besoins - apportPostes;
+    if (differentiel < 0) {
+      differentiel = 0;
+    }
+    return differentiel;
+  }
 }

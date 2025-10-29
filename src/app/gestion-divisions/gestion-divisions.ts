@@ -10,12 +10,11 @@ import { NgForm } from '@angular/forms';
   selector: 'app-gestion-divisions',
   imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './gestion-divisions.html',
-  styleUrl: './gestion-divisions.css'
+  styleUrl: './gestion-divisions.css',
 })
 export class GestionDivisions implements OnInit {
-
   // Initialisations
-  constructor(private db: IndexedDb) { }
+  constructor(private db: IndexedDb) {}
 
   ngOnInit() {
     this.loadDivisions();
@@ -30,18 +29,17 @@ export class GestionDivisions implements OnInit {
     division_examen: 0,
     ponderation: 1,
     horaire_enseignant: 0,
-    horaire_enseignant_sansponderation: 0
+    horaire_enseignant_sansponderation: 0,
   };
   divisions: Division[] = [];
   divisionSelectionnee: Division | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
 
-
   /**
-     * Méthode pour sélectionner une division.
-     * Lorsqu'une division est sélectionnée, elle est stockée dans `divisionSelectionne`.
-     * @param division 
-     */
+   * Méthode pour sélectionner une division.
+   * Lorsqu'une division est sélectionnée, elle est stockée dans `divisionSelectionne`.
+   * @param division
+   */
   selectDivision(division: Division) {
     this.divisionSelectionnee = division;
   }
@@ -57,7 +55,7 @@ export class GestionDivisions implements OnInit {
   /**
    * Méthode pour réinitialiser le formulaire et les sélections.
    * Elle est appelée pour vider les champs du formulaire et réinitialiser l'état d'édition.
-   * @param form 
+   * @param form
    */
   clearInputs(form: NgForm) {
     form.resetForm({
@@ -68,7 +66,7 @@ export class GestionDivisions implements OnInit {
       division_examen: 0,
       ponderation: 1,
       horaire_enseignant: 0,
-      horaire_enseignant_sansponderation: 0
+      horaire_enseignant_sansponderation: 0,
     });
     this.divisionSelectionnee = null;
     this.isEditing = false;
@@ -80,7 +78,7 @@ export class GestionDivisions implements OnInit {
       division_examen: 0,
       ponderation: 1,
       horaire_enseignant: 0,
-      horaire_enseignant_sansponderation: 0
+      horaire_enseignant_sansponderation: 0,
     };
   }
 
@@ -94,32 +92,51 @@ export class GestionDivisions implements OnInit {
    */
   async onSubmit() {
     if (this.isEditing && this.divisionSelectionnee) {
+      // Vérifier si la division est affectée à des enseignants avant modification
+      if (await this.isDivisionAffectee(this.divisionSelectionnee.nom)) {
+        alert(
+          "Vous avez déjà commencé la répartion des classes : des enseignants ont déjà été afffectés à ces divisions. Avant de modifier ou de supprimer ces divisions, veuillez à ce qu'elles ne soient affectées à aucun des services des enseignants."
+        );
+        return;
+      }
+
       // Modification
       const division: Division = {
         ...this.divisionSelectionnee,
-        nom: this.nouvelleDivision.nom!
-          .normalize('NFD')
+        nom: this.nouvelleDivision
+          .nom!.normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toUpperCase(),
         nombreDivisions: this.nouvelleDivision.nombreDivisions!,
-        horaire_eleve_classe_entiere: this.nouvelleDivision.horaire_eleve_classe_entiere!,
-        horaire_eleve_demi_groupe: this.nouvelleDivision.horaire_eleve_demi_groupe!,
+        horaire_eleve_classe_entiere:
+          this.nouvelleDivision.horaire_eleve_classe_entiere!,
+        horaire_eleve_demi_groupe:
+          this.nouvelleDivision.horaire_eleve_demi_groupe!,
         division_examen: this.nouvelleDivision.division_examen!,
         ponderation: this.nouvelleDivision.ponderation!,
-        horaire_enseignant: ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) + (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2) * (this.nouvelleDivision.ponderation ?? 1)
+        horaire_enseignant:
+          ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) +
+            (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2) *
+          (this.nouvelleDivision.ponderation ?? 1),
+        horaire_enseignant_sansponderation:
+          (this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) +
+          (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2,
       };
       await this.db.updateDivision(division);
       this.isEditing = false;
       this.divisionSelectionnee = null;
     } else {
-
       // Vérification de l'existence d'une division avec le même nom (insensible à la casse et aux accents)
-      const nomNormalise = this.nouvelleDivision.nom!
-        .normalize('NFD')
+      const nomNormalise = this.nouvelleDivision
+        .nom!.normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toUpperCase();
-      const existe = this.divisions.some(d =>
-        d.nom.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase() === nomNormalise
+      const existe = this.divisions.some(
+        (d) =>
+          d.nom
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase() === nomNormalise
       );
       if (existe) {
         alert('Une division avec ce nom existe déjà.');
@@ -129,17 +146,24 @@ export class GestionDivisions implements OnInit {
       // Ajout
       const division: Division = {
         id: Date.now(),
-        nom: this.nouvelleDivision.nom!
-          .normalize('NFD')
+        nom: this.nouvelleDivision
+          .nom!.normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toUpperCase(),
         nombreDivisions: this.nouvelleDivision.nombreDivisions!,
-        horaire_eleve_classe_entiere: this.nouvelleDivision.horaire_eleve_classe_entiere!,
-        horaire_eleve_demi_groupe: this.nouvelleDivision.horaire_eleve_demi_groupe!,
+        horaire_eleve_classe_entiere:
+          this.nouvelleDivision.horaire_eleve_classe_entiere!,
+        horaire_eleve_demi_groupe:
+          this.nouvelleDivision.horaire_eleve_demi_groupe!,
         division_examen: this.nouvelleDivision.division_examen!,
         ponderation: this.nouvelleDivision.ponderation!,
-        horaire_enseignant: ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) + (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2) * (this.nouvelleDivision.ponderation ?? 1),
-        horaire_enseignant_sansponderation: ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) + (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2)
+        horaire_enseignant:
+          ((this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) +
+            (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2) *
+          (this.nouvelleDivision.ponderation ?? 1),
+        horaire_enseignant_sansponderation:
+          (this.nouvelleDivision.horaire_eleve_classe_entiere ?? 0) +
+          (this.nouvelleDivision.horaire_eleve_demi_groupe ?? 0) * 2,
       };
       await this.db.addDivision(division);
     }
@@ -151,42 +175,74 @@ export class GestionDivisions implements OnInit {
       division_examen: 0,
       ponderation: 1,
       horaire_enseignant: 0,
-      horaire_enseignant_sansponderation: 0
+      horaire_enseignant_sansponderation: 0,
     };
     await this.loadDivisions();
   }
 
   /**
-* Méthode pour supprimer la division sélectionnée.
-* @returns 
-*/
+   * Méthode pour supprimer la division sélectionnée.
+   * @returns
+   */
   async deleteSelectedDivision() {
     if (!this.divisionSelectionnee) return;
+
+    // Vérifier si la division est affectée à des enseignants
+    if (await this.isDivisionAffectee(this.divisionSelectionnee.nom)) {
+      alert(
+        "Vous avez déjà commencé la répartion des classes : des enseignants ont déjà été afffectés à ces divisions. Avant de modifier ou de supprimer ces divisions, veuillez à ce qu'elles ne soient affectées à aucun des services des enseignants."
+      );
+      return;
+    }
+
     await this.db.deleteDivision(this.divisionSelectionnee.id);
     this.divisionSelectionnee = null;
     await this.loadDivisions();
   }
 
   /**
+   * Vérifie si une division est affectée à des enseignants.
+   * @param nomDivision Le nom de la division à vérifier
+   * @returns Promise<boolean> true si la division est affectée, false sinon
+   */
+  async isDivisionAffectee(nomDivision: string): Promise<boolean> {
+    const enseignants = await this.db.getAllEnseignants();
+    return enseignants.some(
+      (enseignant) =>
+        enseignant.classes &&
+        enseignant.classes.some((classe) => classe.nom === nomDivision)
+    );
+  }
+
+  /**
    * Méthode pour modifier la division sélectionnée.
    */
-  editSelectedDivision() {
+  async editSelectedDivision() {
     if (!this.divisionSelectionnee) return;
+
+    // Vérifier si la division est affectée à des enseignants
+    if (await this.isDivisionAffectee(this.divisionSelectionnee.nom)) {
+      alert(
+        "Vous avez déjà commencé la répartion des classes : des enseignants ont déjà été afffectés à ces divisions. Avant de modifier ou de supprimer ces divisions, veuillez à ce qu'elles ne soient affectées à aucun des services des enseignants."
+      );
+      return;
+    }
+
     this.nouvelleDivision = { ...this.divisionSelectionnee };
     this.isEditing = true;
   }
 
-
   /**
- * Exporte toutes les divisions dans un fichier CSV.
- */
+   * Exporte toutes les divisions dans un fichier CSV.
+   */
   async exportDivisionsToCSV() {
     // 1. Récupérer les divisions depuis la base de données
     const divisions = await this.db.getAllDivisions(true); // true si tu veux trier
 
     // 2. Construire le contenu CSV
-    const header = 'Niveau,NombreDivisions,HeuresClasseEntiere,HeuresDemiGroupe,HeuresProfSansPonderation,CoeffPonderation';
-    const rows = divisions.map(d =>
+    const header =
+      'Niveau,NombreDivisions,HeuresClasseEntiere,HeuresDemiGroupe,HeuresProfSansPonderation,CoeffPonderation';
+    const rows = divisions.map((d) =>
       [
         `"${d.nom}"`,
         d.nombreDivisions,

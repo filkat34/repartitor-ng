@@ -10,17 +10,15 @@ import { NgForm } from '@angular/forms';
   selector: 'app-gestion-enseignants',
   imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './gestion-enseignants.html',
-  styleUrl: './gestion-enseignants.css'
+  styleUrl: './gestion-enseignants.css',
 })
 export class GestionEnseignants implements OnInit {
-
   // Initialisations
-  constructor(private db: IndexedDb) { }
+  constructor(private db: IndexedDb) {}
 
   ngOnInit() {
     this.loadEnseignants();
   }
-
 
   /**
    * Propriétés du composant GestionEnseignants.
@@ -30,12 +28,11 @@ export class GestionEnseignants implements OnInit {
    * - `isEditing`: Indicateur pour savoir si le composant est en mode édition (modification d'un enseignant).
    */
   nouvelEnseignant: Partial<Enseignant> = {
-    quotite:100, // Valeur par défaut pour la quotité
+    quotite: 100, // Valeur par défaut pour la quotité
   };
   enseignants: Enseignant[] = [];
   enseignantSelectionne: Enseignant | null = null;
   isEditing = false; // Propriété pour gérer le mode édition
-
 
   /**
    * Méthode pour charger tous les enseignants depuis la base de données.
@@ -44,7 +41,6 @@ export class GestionEnseignants implements OnInit {
   async loadEnseignants() {
     this.enseignants = await this.db.getAllEnseignants(true);
   }
-
 
   /**
    * Méthode appelée lors de la soumission du formulaire pour ajouter ou modifier un enseignant.
@@ -60,27 +56,33 @@ export class GestionEnseignants implements OnInit {
       // Modification
       const enseignant: Enseignant = {
         ...this.enseignantSelectionne,
-        nom: this.nouvelEnseignant.nom!
-          .normalize('NFD')
+        nom: this.nouvelEnseignant
+          .nom!.normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toUpperCase(),
         corps: this.nouvelEnseignant.corps!,
         ors: this.nouvelEnseignant.ors!,
         quotite: this.nouvelEnseignant.quotite!,
-        service_plancher: ((this.nouvelEnseignant.ors ?? 0) * (this.nouvelEnseignant.quotite ?? 0)) / 100,
+        service_plancher:
+          ((this.nouvelEnseignant.ors ?? 0) *
+            (this.nouvelEnseignant.quotite ?? 0)) /
+          100,
       };
       await this.db.updateEnseignant(enseignant);
       this.isEditing = false;
       this.enseignantSelectionne = null;
     } else {
-
       // Vérification de l'existence d'un enseignant avec le même nom (insensible à la casse et aux accents)
-      const nomNormalise = this.nouvelEnseignant.nom!
-        .normalize('NFD')
+      const nomNormalise = this.nouvelEnseignant
+        .nom!.normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toUpperCase();
-      const existe = this.enseignants.some(e =>
-        e.nom.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase() === nomNormalise
+      const existe = this.enseignants.some(
+        (e) =>
+          e.nom
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase() === nomNormalise
       );
       if (existe) {
         alert('Un enseignant avec ce nom existe déjà.');
@@ -90,14 +92,17 @@ export class GestionEnseignants implements OnInit {
       // Ajout
       const enseignant: Enseignant = {
         id: Date.now(),
-        nom: this.nouvelEnseignant.nom!
-          .normalize('NFD')
+        nom: this.nouvelEnseignant
+          .nom!.normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .toUpperCase(),
         corps: this.nouvelEnseignant.corps!,
         ors: this.nouvelEnseignant.ors!,
         quotite: this.nouvelEnseignant.quotite!,
-        service_plancher: ((this.nouvelEnseignant.ors ?? 0) * (this.nouvelEnseignant.quotite ?? 0)) / 100,
+        service_plancher:
+          ((this.nouvelEnseignant.ors ?? 0) *
+            (this.nouvelEnseignant.quotite ?? 0)) /
+          100,
       };
       await this.db.addEnseignant(enseignant);
     }
@@ -107,7 +112,6 @@ export class GestionEnseignants implements OnInit {
     };
     await this.loadEnseignants();
   }
-
 
   /**
    * Méthode pour définir les ORS en fonction du corps de l'enseignant.
@@ -122,11 +126,10 @@ export class GestionEnseignants implements OnInit {
     }
   }
 
-
   /**
    * Méthode pour sélectionner un enseignant.
    * Lorsqu'un enseignant est sélectionné, il est stocké dans `enseignantSelectionne`.
-   * @param enseignant 
+   * @param enseignant
    */
   selectEnseignant(enseignant: Enseignant) {
     this.enseignantSelectionne = enseignant;
@@ -134,10 +137,20 @@ export class GestionEnseignants implements OnInit {
 
   /**
    * Méthode pour supprimer l'enseignant sélectionné.
-   * @returns 
+   * @returns
    */
   async deleteSelectedEnseignant() {
     if (!this.enseignantSelectionne) return;
+    // Vérifier si l'enseignant a des classes affectées
+    if (
+      this.enseignantSelectionne.classes &&
+      this.enseignantSelectionne.classes.length > 0
+    ) {
+      alert(
+        'Cet enseignant a des classes affectées et ne peut pas être supprimé. Remettez son service à zéro avant de le supprimer.'
+      );
+      return;
+    }
     await this.db.deleteEnseignant(this.enseignantSelectionne.id);
     this.enseignantSelectionne = null;
     await this.loadEnseignants();
@@ -152,11 +165,10 @@ export class GestionEnseignants implements OnInit {
     this.isEditing = true;
   }
 
-
   /**
    * Méthode pour réinitialiser le formulaire et les sélections.
    * Elle est appelée pour vider les champs du formulaire et réinitialiser l'état d'édition.
-   * @param form 
+   * @param form
    */
   clearInputs(form: NgForm) {
     form.resetForm({ quotite: 100, corps: '' }); // Réinitialisation des champs du formulaire
@@ -169,34 +181,34 @@ export class GestionEnseignants implements OnInit {
   }
 
   /**
- * Exporte tous les enseignants dans un fichier CSV.
- */
-async exportEnseignantsToCSV() {
-  // 1. Récupérer les enseignants (déjà triés si tu veux)
-  const enseignants = await this.db.getAllEnseignants(true);
+   * Exporte tous les enseignants dans un fichier CSV.
+   */
+  async exportEnseignantsToCSV() {
+    // 1. Récupérer les enseignants (déjà triés si tu veux)
+    const enseignants = await this.db.getAllEnseignants(true);
 
-  // 2. Construire le contenu CSV
-  const header = 'Nom,Corps,ORS,Quotité(%),ServiceMinimum';
-  const rows = enseignants.map(e =>
-    [
-      `"${e.nom}"`,
-      `"${e.corps}"`,
-      e.ors,
-      e.quotite,
-      e.service_plancher.toFixed(2)
-    ].join(',')
-  );
-  const csvContent = [header, ...rows].join('\n');
+    // 2. Construire le contenu CSV
+    const header = 'Nom,Corps,ORS,Quotité(%),ServiceMinimum';
+    const rows = enseignants.map((e) =>
+      [
+        `"${e.nom}"`,
+        `"${e.corps}"`,
+        e.ors,
+        e.quotite,
+        e.service_plancher.toFixed(2),
+      ].join(',')
+    );
+    const csvContent = [header, ...rows].join('\n');
 
-  // 3. Créer un blob et déclencher le téléchargement
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'enseignants.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+    // 3. Créer un blob et déclencher le téléchargement
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'enseignants.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 }

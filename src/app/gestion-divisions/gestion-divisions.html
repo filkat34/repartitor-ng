@@ -81,11 +81,14 @@
   </div>
 </div>
 
-<div *ngIf="divisions.length === 0" class="text-center text-lg text-red-600 mt-8 mb-8">
+@if (divisions.length === 0) {
+<div class="text-center text-lg text-red-600 mt-8 mb-8">
   Aucune division dans la base de données ! Commencez par en ajouter une.
 </div>
+}
 
-<div *ngIf="divisions.length > 0" class="overflow-x-auto mt-4 px-2" style="max-height: 50vh; overflow-y:auto;">
+@if (divisions.length > 0) {
+<div class="overflow-x-auto mt-4 px-2" style="max-height: 50vh; overflow-y:auto;">
   <table class="table-auto w-full border border-gray-300 rounded-lg shadow">
     <thead class="sticky top-0 bg-blue-100">
       <tr>
@@ -93,14 +96,15 @@
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Nb de divisions</th>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures élève</th>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Demi-groupes</th>
-        <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof par division</th>
+        <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof</th>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Heures prof total</th>
         <th class="px-4 py-2 text-left font-semibold text-blue-800">Pondération</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let division of divisions" (click)="selectDivision(division)"
-        [class.bg-blue-200]="divisionSelectionnee === division" class="cursor-pointer">
+      @for (division of divisions; track division) {
+      <tr (click)="selectDivision(division)" [class.bg-blue-200]="divisionSelectionnee === division"
+        class="cursor-pointer">
         <td class="border-t px-4 py-2">{{ division.nom }}</td>
         <td class="border-t px-4 py-2">{{ division.nombreDivisions }}</td>
         <td class="border-t px-4 py-2 text-left">{{ division.horaire_eleve_classe_entiere +
@@ -111,9 +115,11 @@
           division.nombreDivisions | number:'1.2-2'}}</td>
         <td class="border-t px-4 py-2 text-left">{{ division.division_examen == 1 ? 'Oui' : 'Non' }}</td>
       </tr>
+      }
     </tbody>
   </table>
 </div>
+}
 
 <div class="sticky bottom-0 z-30 pt-2 justify-center flex mt-2 bg-neutral-100">
   <button type="button"
