@@ -1,3 +1,7 @@
+# Migration
+
+Ce dépôt n'est plus mis à jour. Il a été déplacé sur ![la forge des communs numériques éducatifs](/public/boutonforge.svg)
+
 # Objectif
 
 Repartitor est un outil destiné à faciliter les conseils d'enseignement. Il permet de constituer, grâce à une interface simple, les services des enseignants d'une équipe disciplinaire en trois étapes :
