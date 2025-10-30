@@ -1,6 +1,6 @@
 # Migration
 
-Ce dépôt n'est plus mis à jour. Il a été déplacé sur ![la forge des communs numériques éducatifs](/public/boutonforge.svg)
+Ce dépôt n'est plus mis à jour. Il a été déplacé sur [![la forge des communs numériques éducatifs](/public/boutonforge.svg)](https://forge.apps.education.fr/filipposkatsanos/repartitor-ng)
 
 # Objectif
 
